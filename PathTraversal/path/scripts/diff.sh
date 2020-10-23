@@ -1,0 +1,1 @@
+diff -Naur original_path/cgi-bin/memo.pl fixed_path/cgi-bin/memo.pl > patch_path/memo.patch

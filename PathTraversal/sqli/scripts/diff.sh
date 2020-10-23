@@ -1,0 +1,1 @@
+diff -Naur original_sqli/cgi-bin/FCCU.php fixed_sqli/cgi-bin/FCCU.php > patch_sqli/FCCU.patch

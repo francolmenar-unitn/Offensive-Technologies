@@ -1,0 +1,37 @@
+--- original_path/cgi-bin/memo.pl	2020-10-08 07:44:16.237785000 -0700
++++ fixed_path/cgi-bin/memo.pl	2020-10-08 07:44:26.747336000 -0700
+@@ -2,6 +2,11 @@
+ 
+ use CGI qw(:standard);
+ use CGI::Carp qw(fatalsToBrowser);
++
++use Cwd;
++use Cwd 'abs_path';
++
++
+ use strict;
+ 
+ # Barbazzo Fernap barbazzo@gue.com
+@@ -117,9 +122,20 @@
+ 	print "\n</p></td></tr>\n";
+ 	print "<tr><td><p>&nbsp;</p>\n";
+ 	print "<blockquote><p>\n";
++
++	my $abs_path = abs_path($memo); #Get the real path from the user
++	my $seen = 0; # Boolean var to know if the path has been seen in the actual hashmap of valid paths
++
++	foreach my $val (keys %labels){ #Check all the possible paths 
++		if ($abs_path eq $val){ #The path has been found
++			$seen = 1;
++		}
++	}
+ 	
+-	open (MEMO, $memo); # open the memo file
+-	
++	if ($seen == 1){ # Check if the path is a correct one
++		open (MEMO, $memo); # open the memo file
++	}
++
+ 	my $line;
+ 	foreach $line (<MEMO>) {
+ 		# for every line in the memo, print it out
