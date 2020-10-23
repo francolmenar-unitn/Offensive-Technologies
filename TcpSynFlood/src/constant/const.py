@@ -1,5 +1,5 @@
 PCAP_PATH = "pcap/"
-PCAP_TXT = "pcap"
+PCAP_TXT = "output"
 TXT = ".txt"
 
 SYN_code = "0x00000002"

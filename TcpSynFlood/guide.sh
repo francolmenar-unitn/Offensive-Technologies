@@ -23,4 +23,4 @@ sftp otech2ae@users.deterlab.net
 
 put -r /Users/fran/Documents/Estudios/Master/2º-Master/Semester1/Offensive/Exercises/4.TCP_SYN_Flood/scripts
 
-get output.pcap /Users/fran/Documents/Estudios/Master/2º-Master/Semester1/Offensive/Exercises/4.TCP_SYN_Flood/pcap
+get output.pcap /Users/fran/Documents/Estudios/Master/2º-Master/Semester1/Offensive/Offensive-Technologies/TcpSynFlood/pcap

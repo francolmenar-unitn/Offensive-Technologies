@@ -14,6 +14,21 @@ def main():
     pass
 
 
+def pcap_to_txt(pcap_nm):
+    """
+    Runs the command to convert the pcap file to a txt with the desired columns
+    """
+    os.system("tshark -n -r pcap/{}.pcap -E separator=\;  -E header=y -T fields \
+                -e frame.time_epoch \
+                -e ip.proto \
+                -e ip.src \
+                -e ip.dst \
+                -e tcp.srcport \
+                -e tcp.dstport \
+                 -e tcp.flags > pcap/{}.txt".format(pcap_nm, pcap_nm))
+    return 0
+
+
 def create_hash_table(df_hash):
     """
     Receives a df and return a hash table with a list per each different port used
@@ -85,12 +100,14 @@ def calc_connect_time(dic_connect, origin_time_calc):
 def csv(pcap_name=None, csv_name=None):
     # Check what pcap file is to be read
     if pcap_name is not None:  # Pcap file name introduced
-        pcap_txt = PCAP_PATH + pcap_name + TXT
+        pcap_nm = pcap_name
 
     else:  # Default pcap name
-        pcap_txt = PCAP_PATH + PCAP_TXT + TXT
+        pcap_nm = PCAP_TXT
 
-    df = pd.read_csv(pcap_txt, error_bad_lines=False, sep=';')  # Read txt
+    pcap_to_txt(pcap_nm)  # Create the txt file from the pcap
+
+    df = pd.read_csv(PCAP_PATH + pcap_nm + TXT, error_bad_lines=False, sep=';')  # Read txt
     dic = create_hash_table(df)  # Create the hash table with the different connections
 
     origin_time = None  # Initialize the origin time
