@@ -1,7 +1,7 @@
 #!/bin/bash
 
 Interface="false"
-timeout_num="180s"
+timeout_num="183s"
 
 ############## Reading inputs ##############
 while [[ $# -gt 0 ]]; do

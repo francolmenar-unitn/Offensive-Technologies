@@ -1,6 +1,6 @@
 ########################### Values for reading the CSV files ###########################
 # Rounding value for the execution time. If it is set to None no round is performed
-ROUND_VAL = 2
+ROUND_VAL = None
 
 # Names for the columns of the np array
 COL_NM = ["Time",
@@ -9,8 +9,9 @@ COL_NM = ["Time",
 ########################### Constants for Graph Creation  ###########################
 # Range of values for the axis
 AXIS = [
-    [0, 220, 20],
-    [0, 250, 25]
+    [0, 200, 20],
+    # [0, 250, 25]
+    [0, 0.006, 0.001]
 ]
 
 # Names for the axis

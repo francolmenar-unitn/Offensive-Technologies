@@ -65,8 +65,6 @@ def readFiles(files, col, round_val=None):
         # line = pd.DataFrame({col[0]: 0, col[1]: 0}, index=[0])
         # data_tmp = pd.concat([data_tmp.iloc[:0], line, data_tmp.iloc[0:]]).reset_index(drop=True)
 
-        print(data_tmp)
-
         data.append(data_tmp)  # Add the new data from the csv file to the list
     return data
 
