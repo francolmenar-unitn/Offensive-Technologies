@@ -1,0 +1,175 @@
+--- original/webserver.c	2020-10-05 23:54:41.000000000 +0200
++++ fixed/webserver.c	2020-10-05 20:50:06.000000000 +0200
+@@ -81,15 +81,27 @@
+ 	strcat(searchstr, headername);
+ 	strcat(searchstr, ": ");
+ 
+-	if (hdrptr = strstr(req->headers, searchstr)) { 
+-		hdrptr += strlen(searchstr); 
+-		if ((hdrend = strstr(hdrptr, "\r\n"))) {
+-			char hdrval[1024]; // temporary return value
++	if (hdrptr = strstr(req->headers, searchstr)) {
++		hdrptr += strlen(searchstr);
++		if (hdrend = strstr(hdrptr, "\r\n")) {
++            int size = 0;
++
++            if(1024 > (hdrend - hdrptr + 1)){
++                size = 1024;
++            }
++            else {
++                size = hdrend - hdrptr + 1;
++            }
++
++            char hdrval[size];
++
+ 			memcpy((char *)hdrval, hdrptr, (hdrend - hdrptr));
+ 			hdrval[hdrend - hdrptr] = '\0'; // tack null onto end of header value
+ 			int hdrvallen = strlen(hdrval);
+ 			retval = (char *)malloc((hdrvallen + 1) * sizeof(char)); // malloc a space for retval
+ 			strcpy(retval, (char *)hdrval);
++
++            free(hdrval);
+ 		} else {
+ 			retval = (char *)malloc((strlen(hdrptr) + 1) * sizeof(char)); //
+ 			strcpy(retval, hdrptr);
+@@ -186,7 +198,7 @@
+ 	strcpy(req->headers, last_position);
+ 
+ 	return 0;
+-} 
++}
+ 
+ char *contype(char *ext) {
+ 	if (strcmp(ext, "html") == 0) return "text/html";
+@@ -212,11 +224,14 @@
+ 
+ int send_response(int sockfd, httpreq_t *req, int statcode) {
+ 	int urifd;
++
+ 	const int BUFSIZE = 1024;
+-	char sendmessage[BUFSIZE];
++    char *sendmessage;
++    sendmessage = (char *)malloc((BUFSIZE) * sizeof(char));
++
+ 	char *path = req->uri;
+ 
+-	if (req->uri == NULL || req->method == NULL || 
++	if (req->uri == NULL || req->method == NULL ||
+ 		req->headers == NULL || req->version == NULL) {
+ 		return 0;
+ 	}
+@@ -229,7 +244,7 @@
+ 			path = "index.html";
+ 		} else if (path[strlen(path) - 1] == '/') {
+ 			//concatenating index.html for a /-terminated URL!
+-			strcat(path, "index.html");    
++			strcat(path, "index.html");
+ 		}
+ 	} else {
+ 		statcode = 400;
+@@ -293,12 +308,12 @@
+ 
+ 		time(&curtime); // time for Date: header
+ 		strcat(sendmessage, "HTTP/1.0 ");
+-		strcat(sendmessage, status(statcode));    
++		strcat(sendmessage, status(statcode));
+ 		strcat(sendmessage, "\r\nDate: ");
+ 		strncat(sendmessage, asctime(gmtime(&curtime)), 24);
+ 		strcat(sendmessage, "\r\nServer: Frobozz Magic Software Company Webserver v.002");
+ 		strcat(sendmessage, "\r\nConnection: close");
+-		strcat(sendmessage, "\r\nContent-Type: ");    
++		strcat(sendmessage, "\r\nContent-Type: ");
+ 		strcat(sendmessage, contype(ext));
+ 		strcat(sendmessage, "\r\n\r\n");
+ 
+@@ -310,6 +325,13 @@
+ 		strcat(sendmessage, "</title></head><body><h2>HTTP/1.0</h2><h1>");
+ 		strcat(sendmessage, status(statcode));
+ 		strcat(sendmessage, "</h1><h2>URI: ");
++
++		int total_length = strlen(sendmessage) + strlen(path) + strlen("</h2></body></html>"); // Check that the path is not going to overflow it
++
++		if(total_length > BUFSIZE) {
++            sendmessage = realloc(sendmessage, total_length);
++		}
++
+ 		strcat(sendmessage, path);
+ 		strcat(sendmessage, "</h2></body></html>");
+ 	}
+@@ -317,6 +339,7 @@
+ 	if (sendmessage[0] != '\0') {
+ 		// send headers as long as there are headers to send
+ 		if (send(sockfd, sendmessage, strlen(sendmessage), 0) < 0) {
++		    free(sendmessage);
+ 			perror("send");
+ 			pthread_exit(NULL);
+ 		}
+@@ -329,20 +352,23 @@
+ 
+ 		while (readbytes = read(urifd, sendmessage, BUFSIZE)) {
+ 			if (readbytes < 0) {
++                free(sendmessage);
+ 				perror("read");
+ 				pthread_exit(NULL);
+ 			}
+ 			if (send(sockfd, sendmessage, readbytes, 0) < 0) {
++                free(sendmessage);
+ 				perror("send");
+ 				pthread_exit(NULL);
+ 			}
+ 		}
+ 	}
++    free(sendmessage);
+ }
+ 
+ void *data_thread(void *sockfd_ptr) {
+ 
+-	int sockfd = *(int *) sockfd_ptr;
++    int sockfd = *(int *) sockfd_ptr;
+ 	const int BUFSIZE = 5;
+ 	char recvmessage[BUFSIZE];
+ 	char *headerstr = NULL;
+@@ -361,7 +387,7 @@
+ 	free(sockfd_ptr); // we have the int value out of this now
+ 	recvmessage[BUFSIZE - 1] = '\0'; // mark end of "string"
+ 
+-	/* Read incoming client message from the socket */  
++	/* Read incoming client message from the socket */
+ 	while(!done && (recvbytes = recv(sockfd, recvmessage, BUFSIZE - 1, 0))) {
+ 		if (recvbytes < 0) {
+ 			perror("recv");
+@@ -400,13 +426,12 @@
+ 					statcode = 400;
+ 				}
+ 
+-				if (strcmp(req.method, "POST") == 0) {
+-
++                if (strcmp(req.method, "POST") == 0) {
+ 
+-					// grab the body length
++                    // grab the body length
+ 					char *clenstr = get_header(&req, "Content-Length");
+ 
+-					if (clenstr) {
++                    if (clenstr) {
+ 
+ 						content_length = atoi(clenstr) - ((headerstr + totalheadlen) - header_end - 4);
+ 
+@@ -444,7 +469,7 @@
+ 		free(headerstr);
+ 	}
+ 
+-	send_response(sockfd, &req, statcode);
++    send_response(sockfd, &req, statcode);
+ 	close(sockfd);
+ 
+ 	return NULL;
+@@ -488,7 +513,7 @@
+ 	saddr.sin_addr.s_addr=htonl(INADDR_ANY);
+ 
+ 	/* Bind our local address so that the client can send to us */
+-	if(bind(sockfd,(struct sockaddr *) &saddr,sizeof(saddr)) == -1) {  
++	if(bind(sockfd,(struct sockaddr *) &saddr,sizeof(saddr)) == -1) {
+ 		perror("bind");
+ 		exit(1);
+ 	}
