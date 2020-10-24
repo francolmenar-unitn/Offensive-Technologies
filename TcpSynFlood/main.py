@@ -119,7 +119,7 @@ def csv(pcap_name=None, csv_name=None):
         print("Error while getting the origin time")
         quit(-1)
 
-    connect_times = calc_connect_time(dic, origin_time)
+    connect_times = calc_connect_time(dic, origin_time)  # Calculates the correct time
 
     create_folder(CSV_PATH)  # Create csv folder in case it does not exist
 
@@ -127,11 +127,15 @@ def csv(pcap_name=None, csv_name=None):
     if csv_name is not None:  # Csv file name introduced
         csv_file = CSV_PATH + csv_name + CSV
 
+    elif pcap_name is not None:  # Pcap file name introduced so it is used the same one for the csv
+        csv_file = CSV_PATH + pcap_name + CSV
+
     else:  # Default csv name
         csv_file = CSV_PATH + CSV_NAME + CSV
 
     save_result_csv(connect_times, csv_file)  # Save the results into a csv file
 
+    os.system("rm {}*.txt".format(PCAP_PATH))
     return 0
 
 
