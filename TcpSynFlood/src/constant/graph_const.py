@@ -25,7 +25,10 @@ COLOUR = [
     "tab:blue",
     "coral",
     "tab:green",
-    "gold"
+    "gold",
+    "tab:red",
+    "coral",
+    "tab:green"
 ]
 
 COLOUR_FILL_MEDIAN = "cornflowerblue"
@@ -35,12 +38,15 @@ GRID_COLOUR = '#cfe0e8'
 
 IMG_FOLDER_PATH = "img/"
 
-# Name for the images files TODO Change
+# Name for the images files
 IMG = [
-    "scenario_1_noise",
-    "scenario_1",
-    "scenario_2_noise",
-    "scenario_2"
+    # "Highrate_of_50",
+    # "Highrate_of_100",
+    # "Highrate_of_150",
+    "Highrate_of_200_off",
+    # "Highrate_of_250",
+    # "Highrate_of_300",
+    "Highrate_of_200_on"
 ]
 
 IMG_SIZE = 600
@@ -48,28 +54,37 @@ IMG_SIZE = 600
 # Type of the output image file
 IMG_TYPE = ".png"
 
-# Names for the labels from the legend TODO Change
+# Names for the labels from the legend
 LABEL = [
-    "Scenario 1 with noise",
-    "Scenario 1 without noise",
-    "Scenario 2 with noise",
-    "Scenario 2 without noise"
+    # "Highrate of 50/s",
+    # "Highrate of 100/s",
+    # "Highrate of 150/s",
+    "Highrate of 200/s off",
+    # "Highrate of 250/s",
+    # "Highrate of 300/s",
+    "Highrate of 200/s on"
 ]
 
-# Names for the different graphs TODO Change
+# Names for the different graphs
 GRAPH_NM = [
-    "Scenario 1 with noise",
-    "Scenario 1 without noise",
-    "Scenario 2 with noise",
-    "Scenario 2 without noise"
+    # "Highrate of 50/s",
+    # "Highrate of 100/s",
+    # "Highrate of 150/s",
+     "Highrate of 200/s off",
+    # "Highrate of 250/s",
+    # "Highrate of 300/s",
+    "Highrate of 200/s on"
 ]
 
-# Names for the comparison graphs TODO Change
+# Names for the comparison graphs
 GRAPH_COMP_NM = [
-    "Scenario 1 with noise",
-    "Scenario 1 without noise",
-    "Scenario 2 with noise",
-    "Scenario 2 without noise"
+    # "Highrate of 50/s",
+    # "Highrate of 100/s",
+    # "Highrate of 150/s",
+    "Highrate of 200/s off",
+    # "Highrate of 250/s",
+    # "Highrate of 300/s",
+    "Highrate of 200/s on"
 ]
 
 # Size of the points for the graph

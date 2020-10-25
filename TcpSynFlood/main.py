@@ -1,4 +1,7 @@
 import os
+from os import listdir
+from os.path import isfile
+
 import click
 from pyfiglet import Figlet
 
@@ -7,6 +10,7 @@ import pandas as pd
 from src.constant.const import SYN_code, ACK_code, FIN_code, CSV_PATH, CSV, CSV_NAME, PCAP_TXT, PCAP_PATH, TXT
 from src.functions.func import create_folder, save_result_csv
 from src.graph.createGraph import create_graph
+from os.path import isfile, join
 
 
 @click.group()
@@ -94,10 +98,7 @@ def calc_connect_time(dic_connect, origin_time_calc):
     return connect_times_dic
 
 
-@main.command(help='Creates the csv file from the pcap file.')
-@click.option('--pcap_name', '-pcap', required=False, nargs=1, help='Name of the pcap file to be read.')
-@click.option('--csv_name', '-csv', required=False, nargs=1, help='Name of the csv file to be created.')
-def csv(pcap_name=None, csv_name=None):
+def csv_exec(pcap_name, csv_name):
     # Check what pcap file is to be read
     if pcap_name is not None:  # Pcap file name introduced
         pcap_nm = pcap_name
@@ -135,7 +136,25 @@ def csv(pcap_name=None, csv_name=None):
 
     save_result_csv(connect_times, csv_file)  # Save the results into a csv file
 
-    os.system("rm {}*.txt".format(PCAP_PATH))
+
+@main.command(help='Creates the csv file from the pcap file.')
+@click.option('--pcap_name', '-pcap', required=False, nargs=1, help='Name of the pcap file to be read.')
+@click.option('--csv_name', '-csv', required=False, nargs=1, help='Name of the csv file to be created.')
+@click.option('--all', '-a', is_flag=True, help='Run all the pcap files at the folder pcap.')
+def csv(all, pcap_name=None, csv_name=None):
+    if all:  # Run all the pcap files
+        list_f = []
+        for f_i in listdir(PCAP_PATH):  # Get the names of the pcap files to be used
+            if isfile(join(PCAP_PATH, f_i)):
+                list_f.append(f_i.split(".pcap")[0])
+
+        for f_i in list_f:  # Create the csv file for all the pcap files
+            csv_exec(f_i, csv_name)
+
+    else:  # Run only the specified pcap file
+        csv_exec(pcap_name, csv_name)
+
+    os.system("rm {}*.txt".format(PCAP_PATH))  # Remove all the txt files
     return 0
 
 

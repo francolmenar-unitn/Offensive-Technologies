@@ -5,6 +5,7 @@ import os
 
 from src.constant.graph_const import *
 from src.constant.const import *
+from src.functions.func import create_folder
 
 
 def save_data(arr, file):
@@ -67,17 +68,6 @@ def readFiles(files, col, round_val=None):
 
         data.append(data_tmp)  # Add the new data from the csv file to the list
     return data
-
-
-def create_folder(folder):
-    """
-    Checks if a folder exists, if it does not it creates it
-    :param folder: Folder to be created
-    :return:
-    """
-    # Check if the folder does not exists
-    if not os.path.isdir(folder):
-        os.makedirs(folder)  # Create folder
 
 
 def update_path_mod(g_mode, img_folder):
@@ -249,7 +239,15 @@ def create_graph():
     from os.path import isfile, join
     file_list = [f for f in listdir(CSV_PATH) if isfile(join(CSV_PATH, f))]
 
-    data = readFiles([CSV_PATH + CSV_NAME + CSV], COL_NM, round_val=ROUND_VAL)
+    data = readFiles([
+                      # CSV_PATH + CSV_50 + CSV,
+                      # CSV_PATH + CSV_100 + CSV,
+                      # CSV_PATH + CSV_150 + CSV,
+                      CSV_PATH + CSV_200 + CSV,
+                      # CSV_PATH + CSV_250 + CSV,
+                      # CSV_PATH + CSV_300 + CSV,
+                      CSV_PATH + CSV_200_ON + CSV
+                    ], COL_NM, round_val=ROUND_VAL)
 
     # Modes to use, change by the user - Median mode should be used alone
     modes = [LN_DISC]
@@ -356,6 +354,9 @@ def createPlots(c1, c2, data, label, colour,
     plt.title(name)
     plt.xlabel(axis[0])
     plt.ylabel(axis[1])
+
+    plt.axvline(x=30, color='indianred')
+    plt.axvline(x=150, color='indianred')
 
     # Set the colour to the grid
     if grid_colour is None:
