@@ -240,14 +240,14 @@ def create_graph():
     file_list = [f for f in listdir(CSV_PATH) if isfile(join(CSV_PATH, f))]
 
     data = readFiles([
-                      # CSV_PATH + CSV_50 + CSV,
-                      # CSV_PATH + CSV_100 + CSV,
-                      # CSV_PATH + CSV_150 + CSV,
-                      CSV_PATH + CSV_200 + CSV,
-                      # CSV_PATH + CSV_250 + CSV,
-                      # CSV_PATH + CSV_300 + CSV,
-                      CSV_PATH + CSV_200_ON + CSV
-                    ], COL_NM, round_val=ROUND_VAL)
+        # CSV_PATH + CSV_50 + CSV,
+        # CSV_PATH + CSV_100 + CSV,
+        # CSV_PATH + CSV_150 + CSV,
+        CSV_PATH + CSV_200 + CSV,
+        # CSV_PATH + CSV_250 + CSV,
+        # CSV_PATH + CSV_300 + CSV,
+        CSV_PATH + CSV_200_ON + CSV
+    ], COL_NM, round_val=ROUND_VAL)
 
     # Modes to use, change by the user - Median mode should be used alone
     modes = [LN_DISC]
