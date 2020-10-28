@@ -243,10 +243,10 @@ def create_graph():
         # CSV_PATH + CSV_50 + CSV,
         # CSV_PATH + CSV_100 + CSV,
         # CSV_PATH + CSV_150 + CSV,
-        CSV_PATH + CSV_200 + "_demo" + CSV,
+        CSV_PATH + CSV_200 + CSV,
         # CSV_PATH + CSV_250 + CSV,
         # CSV_PATH + CSV_300 + CSV,
-        CSV_PATH + CSV_200_ON + "_demo" + CSV
+        CSV_PATH + CSV_200_ON + CSV
     ], COL_NM, round_val=ROUND_VAL)
 
     # Modes to use, change by the user - Median mode should be used alone

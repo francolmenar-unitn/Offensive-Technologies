@@ -43,7 +43,7 @@ IMG = [
     # "Highrate_of_50",
     # "Highrate_of_100",
     # "Highrate_of_150",
-    "Highrate_of_200_off_demo",  # TODO CHANGE
+    "Highrate_of_200_off",
     # "Highrate_of_250",
     # "Highrate_of_300",
     "Highrate_of_200_on"
@@ -70,7 +70,7 @@ GRAPH_NM = [
     # "Highrate of 50/s",
     # "Highrate of 100/s",
     # "Highrate of 150/s",
-    "Highrate of 200/s off",
+     "Highrate of 200/s off",
     # "Highrate of 250/s",
     # "Highrate of 300/s",
     "Highrate of 200/s on"
