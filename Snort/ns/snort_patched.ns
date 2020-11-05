@@ -1,0 +1,36 @@
+set ns [new Simulator]
+source tb_compat.tcl
+
+#Nodes
+foreach node {snort router server client1 client2 outsider internal} {
+	set $node [$ns node]
+        tb-set-node-os [set $node] Ubuntu1804-STD
+}
+
+
+# the clients are started after this
+tb-set-node-startcmd $snort "bash /share/education/SecuringLegacySystems_JHU/Snort/SnortInstall.sh"
+tb-set-node-startcmd $server "bash /proj/OffTech/snort/Server/serverConfig.sh"
+tb-set-node-startcmd $client1 "bash /proj/OffTech/snort/Client/clientConfig.sh"
+
+
+
+#LANs
+set lan0 [$ns make-lan "$client1 $client2 $router" 100000.0kb 0.0ms]
+set lan2 [$ns make-lan "$snort $server $internal" 100000.0kb 0.0ms]
+set networkLink [$ns duplex-link $snort $router 100000.0kb 0.0ms DropTail]
+set outLink [$ns  duplex-link  $outsider $router 100000.0kb 0.0ms DropTail]
+
+# this sets the devices, the snort box does not need to be manually assigned an IP as it is acting as the router
+tb-set-ip $client1 100.1.5.10
+tb-set-ip $client2 100.1.5.11
+tb-set-ip $outsider 100.1.200.10
+tb-set-ip $server 100.1.10.10
+
+# this supplies a route for all of the clients to the server and sets the scripts to run
+foreach node {client2 outsider internal} {
+	tb-set-node-startcmd $node "bash /proj/OffTech/snort/Client/clientConfig.sh"
+	}
+
+$ns rtproto Static
+$ns run

@@ -1,0 +1,12 @@
+<root>
+	<file id="1">
+		<properties>
+		<hash id="2">fe1c9bd1cefe481fc9c5c5ea996b26d55a176d8</hash>
+		<key id="3">1v1znudjD5NrtgTmOspKUA==</key>
+		</properties>
+		<users id="4">
+			<user><username>bob</username><after>0</after><before>20000000000000</before></user>
+			<user><username>billy</username><after>0</after><before>20000000000000</before></user>
+		</users>
+	</file>
+</root>
