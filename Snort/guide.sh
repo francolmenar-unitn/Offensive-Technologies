@@ -12,4 +12,4 @@ sftp otech2ae@users.deterlab.net
 
 put -r /Users/fran/Documents/Estudios/Master/2º-Master/Semester1/Offensive/Offensive-Technologies/Snort/scripts
 
-get /users/otech2ae/snort.conf /Users/fran/Documents/Estudios/Master/2º-Master/Semester1/Offensive/Offensive-Technologies/Snort/scripts/guard/
+get /users/otech2ae/*.pcap /Users/fran/Documents/Estudios/Master/2º-Master/Semester1/Offensive/Offensive-Technologies/Snort/scripts/guard/pcap
