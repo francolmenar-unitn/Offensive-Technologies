@@ -17,4 +17,4 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-flooder --dst 5.6.7.8 --highrate "$high_rate" --proto 6 --dportmin 80 --dportmax 80 --src 1.1.2.4  --srcmask 255.255.255.0
+flooder --dst 100.1.10.10 --highrate "$high_rate" --proto 6 --dportmin 80 --dportmax 80 --src 100.1.5.10 --srcmask 255.255.255.0

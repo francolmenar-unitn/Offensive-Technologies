@@ -1,5 +1,5 @@
 #!/bin/bash
-timeout_num="100s"
+timeout_num="110s"
 high_rate="100000" # 100k
 
 ############## Reading inputs ##############
@@ -20,7 +20,7 @@ done
 
 echo "Starting attack traffic for '$timeout_num' with a high rate of '$high_rate'"
 
-# 120 seconds of attack traffic
-timeout "$timeout_num" ./scripts/DoS/attack.sh -r "$high_rate"
+# 100 seconds of attack traffic
+timeout "$timeout_num" ./attack.sh -r "$high_rate"
 
 echo "Attack traffic finished"
