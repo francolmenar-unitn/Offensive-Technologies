@@ -1,12 +1,45 @@
 Red Team:
 
 Possible solutions for Denial Of Service
+    0. Spoof source ip address:
+       Found possible way to spoof ip address:
+        Router configuration:
+            10.0.0.0/8 via 10.1.1.3 dev eth5 
+            10.1.1.0/24 dev eth5 proto kernel scope link src 10.1.1.2 
+            10.1.2.0/24 dev eth3 proto kernel scope link src 10.1.2.3 
+            10.1.3.0/24 dev eth1 proto kernel scope link src 10.1.3.3
+            10.1.4.0/24 dev eth2 proto kernel scope link src 10.1.4.3
+        By using spoofer.sh the source ip can be spoofed to one belonging the the LAN 10.1.3.0/24 and the attack will continue working.
+        Defense for spoofing: in the gateway allow traffic only from 10.1.3.2, 10.1.3.1, 10.1.3.
+    
     1. SlowLoris attack => keeps the server's resource pool busy by slowly submitting requests with headers
     and never finishing.
-    Script needs to be improved => maybe add multithreading ??
-    Possible defense: reqtimeout module
+    Possible defenses: 
+        - reqtimeout module
+
+        - iptables -I INPUT -p tcp --dport 80 \
+            -m connlimit --connlimit-above 20 --connlimit-mask 40 -j DROP
+
+        - mod-qos module:
+            sudo apt install libapache2-mod-qos
+            Go to /etc/apache2/mods-available and edit mod-qos configuration file:
+                <IfModule qos_module>
+                    # minimum request rate (bytes/sec at request reading):
+                    QS_SrvRequestRate   120
+
+                    # limits the connections for this virtual host:
+                    QS_SrvMaxConn       100
+
+                    # allows keep-alive support till the server reaches 200 connections:
+                    QS_SrvMaxConnClose  200
+
+                    # allows max 50 connections from a single ip address:
+                    QS_SrvMaxConnPerIP  10
+                </IfModule>
+
 
     2. GoldenEye => keeps the server's connections alive by using HTTP Keep Alive + No Cache as attack vector.
+    Same spoofing technique as above.
     Possible defense:
         1. use hash limit in ip tables
         2. use snort rules to block Keep-Alive and No Cache
