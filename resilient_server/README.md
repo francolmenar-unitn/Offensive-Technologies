@@ -1,7 +1,7 @@
 # Activities
 
 
-##Red Team:
+## Red Team:
 
 ### Possible solutions for Denial Of Service
   1. SlowLoris attack => keeps the server's resource pool busy by slowly submitting requests with headers
@@ -22,7 +22,7 @@
     Possible defense: hashlimit on iptables or rate_limit in snort.
 
 
-##Blue Team:
+## Blue Team:
 
 ### Useful defense commands
     
