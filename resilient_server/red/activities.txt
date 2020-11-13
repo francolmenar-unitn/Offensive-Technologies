@@ -9,8 +9,8 @@ Possible solutions for Denial Of Service
             10.1.2.0/24 dev eth3 proto kernel scope link src 10.1.2.3 
             10.1.3.0/24 dev eth1 proto kernel scope link src 10.1.3.3
             10.1.4.0/24 dev eth2 proto kernel scope link src 10.1.4.3
-        By using spoofer.sh the source ip can be spoofed to one belonging the the LAN 10.1.3.0/24 and the attack will continue working.
-        Defense for spoofing: in the gateway allow traffic only from 10.1.3.2, 10.1.3.1, 10.1.3.
+        Use spoofer.sh to set up NAT
+        Arp poisoning against the router: sudo arpspoof -i eth1 -t 10.1.3.3 10.1.3.5
     
     1. SlowLoris attack => keeps the server's resource pool busy by slowly submitting requests with headers
     and never finishing.
