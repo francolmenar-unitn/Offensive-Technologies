@@ -48,13 +48,13 @@ calc_path() {
   echo "$return_path"
 }
 
-deter_user=$(read_input "$@")                # Read the username to be used
-sftp_user="$deter_user@users.deterlab.net" # Construct the SSH user login command
-deter_user_path=":/users/$deter_user/" # Path to the default folder of the deter user
+deter_user=$(read_input "$@")               # Read the username to be used
+ssh_user="$deter_user@users.deterlab.net"   # Construct the SSH user login command
+deter_user_path=":/users/$deter_user/"      # Path to the default folder of the deter user
 
 reference_path="resilient_server"           # It is the folder from which all the content is going to be copied
 project_path=$(calc_path "$reference_path") # Create the path on which the commands are going to be run
 
-echo "$project_path" "$sftp_user$deter_user_path"
+project_path="$project_path/blue" # In case only blue wants to be sent
 
-scp "$project_path" "$sftp_user$deter_user_path"
+scp -r "$project_path" "$ssh_user$deter_user_path"
