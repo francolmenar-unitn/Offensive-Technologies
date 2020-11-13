@@ -23,28 +23,38 @@ read_input() {
   echo "$username" # Return the username
 }
 
-# I don't know yet if I'll need it
-path_test() {
-  current_path=$(pwd)  # Get the current directory path
-
-  echo "$current_path" # Debug
+# Get the desired path to run the commands
+calc_path() {
+  current_path=$(pwd) # Get the current directory path
 
   IFS='/'
   read -raarr_path <<<"$current_path" # Split the path by '/'
   IFS=''                              # Set IFS back to whitespace
 
-  for word in "${arr_path[@]}"; do
-    echo $word
+  str_pos=0 # Index which will store the position of the last element of the path
+
+  for ((i = 0; i < "${#arr_path[@]}"; i++)); do
+    if [ "${arr_path[i]}" == "$1" ]; then
+      str_pos=$i
+    fi
   done
 
+  return_path=""
+
+  for ((i = 1; i <= str_pos; i++)); do # Position 0 is empty that's why it starts at 1
+    return_path="$return_path/${arr_path[i]}"
+  done
+
+  echo "$return_path"
 }
 
-deter_user=$(read_input "$@") # Read the username to be used
-sftp_user="'$deter_user'@users.deterlab.net" # Construct the SSH user login command
+deter_user=$(read_input "$@")                # Read the username to be used
+sftp_user="$deter_user@users.deterlab.net" # Construct the SSH user login command
+deter_user_path=":/users/$deter_user/" # Path to the default folder of the deter user
 
-script_path="" # To be created
-config_path="resilient_server"
+reference_path="resilient_server"           # It is the folder from which all the content is going to be copied
+project_path=$(calc_path "$reference_path") # Create the path on which the commands are going to be run
 
-deter_user_path=":/users/$deter_user/"  # Path to the default folder of the deter user
+echo "$project_path" "$sftp_user$deter_user_path"
 
-# scp "$config_path" "$sftp_user$sftp_path"
+scp "$project_path" "$sftp_user$deter_user_path"
