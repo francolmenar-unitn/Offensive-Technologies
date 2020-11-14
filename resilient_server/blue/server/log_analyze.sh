@@ -39,23 +39,28 @@ while sleep 1; do
   rows_val_vhost=$(awk '{print $0;}' $OTHER_HOST_LOG | tail -"$new_rows_count_vhost")
 
   ############################ Printing ############################
-  date | awk '{print $4}'
-  if [ "$new_rows_count" -ne "0" ]; then  # HTTP request logs
-    echo -e "\t\t$new_rows_count New requests"
-    echo -e "\t\t\t$rows_val"
-  fi
+  # Check to know that there is something else to be printed
+  if [ "$new_rows_count" -ne "0" ] || [ "$new_rows_count_err" -ne "0" ] || [ "$new_rows_count_vhost" -ne "0" ]; then
 
-  if [ "$new_rows_count_err" -ne "0" ]; then  # Error logs
-    echo ""
-    echo -e "\t\t$new_rows_count_err New errors"
-    echo -e "\t$rows_val_err"
-  fi
+    date | awk '{print $4}'
 
-  if [ "$new_rows_count_vhost" -ne "0" ]; then  # Vhost logs
-    echo ""
-    echo -e "\t\t$new_rows_count_vhost New Other Vhosts Access"
-    echo -e "\t$rows_val_vhost"
-  fi
+    if [ "$new_rows_count" -ne "0" ]; then  # HTTP request logs
+      echo -e "\t\t$new_rows_count New requests"
+      echo -e "\t\t\t$rows_val"
+    fi
 
+    if [ "$new_rows_count_err" -ne "0" ]; then  # Error logs
+      echo ""
+      echo -e "\t\t$new_rows_count_err New errors"
+      echo -e "\t$rows_val_err"
+    fi
+
+    if [ "$new_rows_count_vhost" -ne "0" ]; then  # Vhost logs
+      echo ""
+      echo -e "\t\t$new_rows_count_vhost New Other Vhosts Access"
+      echo -e "\t$rows_val_vhost"
+    fi
   echo "----------------------------------------------------------------------------------------------------------------------------"
+
+  fi
 done
