@@ -159,7 +159,7 @@ while (<>) {
     ACK   | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes |\n
     UDP   | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes |\n
     ICMP  | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes |\n
-    Other | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes |\n\n",
+    Other | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes | %10d packets %15d Bytes |\n\n\n",
      (localtime())[2,1,0],
      $packetnum_TCP[0],$bytes_this_interval_TCP[0],$packetnum_TCP[1],$bytes_this_interval_TCP[1],$packetnum_TCP[2],$bytes_this_interval_TCP[2],$packetnum_TCP[3],$bytes_this_interval_TCP[3],
      $packetnum_SYN[0],$bytes_this_interval_SYN[0],$packetnum_SYN[1],$bytes_this_interval_SYN[1],$packetnum_SYN[2],$bytes_this_interval_SYN[2],$packetnum_SYN[3],$bytes_this_interval_SYN[3],
