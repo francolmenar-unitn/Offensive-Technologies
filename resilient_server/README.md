@@ -15,9 +15,9 @@
         1. use hash limit in ip tables
         2. use snort rules to block Keep-Alive and No Cache
 
-  3. apache2-utils => stress test the server with ab -c 200 -n 5000 -r <url>
+  3. 1. apache2-utils => stress test the server with ab -c 200 -n 5000 -r <url>
     Possible defense: qos_module
-     JMeter - similar to apache benchmark, but more powerful
+     2. JMeter - similar to apache benchmark, but more powerful
      https://jmeter.apache.org/usermanual/jmeter_distributed_testing_step_by_step.pdf
 
   4. Traditional flooding tools like flooder or hping3
