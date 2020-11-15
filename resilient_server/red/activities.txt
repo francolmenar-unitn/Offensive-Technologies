@@ -26,17 +26,16 @@ Possible solutions for Denial Of Service
             sudo apt install libapache2-mod-qos
             Go to /etc/apache2/mods-available and edit mod-qos configuration file:
                 <IfModule qos_module>
-                    # minimum request rate (bytes/sec at request reading):
-                    QS_SrvRequestRate   120
-
-                    # limits the connections for this virtual host:
-                    QS_SrvMaxConn       100
-
-                    # allows keep-alive support till the server reaches 200 connections:
-                    QS_SrvMaxConnClose  200
-
-                    # allows max 50 connections from a single ip address:
-                    QS_SrvMaxConnPerIP  10
+                    # handles connections from up to 100000 different IPs (200,000*150bytes=30MB needed)
+                    QS_ClientEntries 100000
+                    # will allow only 50 connections per IP
+                    QS_SrvMaxConnPerIP 10
+                    # maximum number of active TCP connections is limited to 256
+                    MaxClients 256
+                    # disables keep-alive when 75% of the TCP connections are occupied:
+                    QS_SrvMaxConnClose 192
+                    # minimum request/response speed (deny keeping connections open without requesting anything)
+                    QS_SrvMinDataRate 150 1200
                 </IfModule>
 
 

