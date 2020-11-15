@@ -10,7 +10,9 @@ Possible solutions for Denial Of Service
             10.1.3.0/24 dev eth1 proto kernel scope link src 10.1.3.3
             10.1.4.0/24 dev eth2 proto kernel scope link src 10.1.4.3
         Use spoofer.sh to set up NAT
-        Arp poisoning against the router: sudo arpspoof -i eth1 -t 10.1.3.3 10.1.3.5
+        Arp poisoning against the router: 
+            sudo apt install dsniff
+            sudo arpspoof -i <interface connected to router> -t <router> <spoofed ip>
     
     1. SlowLoris attack => keeps the server's resource pool busy by slowly submitting requests with headers
     and never finishing.
@@ -49,6 +51,12 @@ Possible solutions for Denial Of Service
 
     4. Traditional flooding tools like flooder or hping3
     Possible defense: hashlimit on iptables or rate_limit in snort.
+
+Milestones:
+    1. raw_socket.py, goldeneye.py and apache2-utils
+    2. raw_sockets.py, script with hping in different modifies
+    3. goldeneye.py
+    4. slowloris.py
 
 
 Blue Team:
