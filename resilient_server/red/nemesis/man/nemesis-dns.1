@@ -1,0 +1,266 @@
+.\" THE NEMESIS PROJECT
+.\" Copyright (C) 1999, 2000 , 2001 Mark Grimes <mark@stateful.net>
+.\" Copyright (C) 2001 - 2003 Jeff Nathan <jeff@snort.org>
+.\" Copyright (C) 2019 Joachim Nilsson <troglobit@gmail.com>
+.\"
+.Dd Dec 2, 2019
+.Dt nemesis-dns 1 USM
+.Sh NAME
+.Nm nemesis-dns
+.Nd DNS Protocol (The Nemesis Project)
+.Sh SYNOPSIS
+.Nm
+.Op FlkvZ?
+.Op Fl a Ar NUM
+.Op Fl A Ar NUM
+.Op Fl b Ar NUM
+.Op Fl d Ar IFNAME
+.Op Fl D Ar ADDr
+.Op Fl f Ar FLAGS
+.Op Fl F Ar OPT
+.Op Fl g Ar FLAGS
+.Op Fl H Ar MAC
+.Op Fl i Ar ID
+.Op Fl I Ar ID
+.Op Fl M Ar MAC
+.Op Fl o Ar FILE
+.Op Fl O Ar FILE
+.Op Fl P Ar FILE
+.Op Fl q Ar NUM
+.Op Fl r Ar NUM
+.Op Fl s Ar NUM
+.Op Fl S Ar ADDR
+.Op Fl t Ar TOS
+.Op Fl T Ar TTL
+.Op Fl u Ar OFFSET
+.Op Fl w Ar SIZE
+.Op Fl x Ar PORT
+.Op Fl y Ar PORT
+.Sh DESCRIPTION
+.Nm nemesis
+is designed to be a command line-based, portable human IP stack for UNIX-like 
+and Windows systems.  The suite is broken down by protocol, and should allow 
+for useful scripting of injected packets from simple shell scripts. 
+.Pp
+.Nm
+provides an interface to craft and inject DNS packets allowing the user to 
+specify any portion of a DNS packet as well as lower-level IP and TCP/UDP 
+packet information.
+.Sh DNS OPTIONS
+.Bl -tag -width Ds
+.It Fl A Ar NUM
+Specify the number of authoritative resource records in the DNS header.
+.It Fl b Ar NUM
+Specify the number of answer resource records in the DNS header.
+.It Fl g Ar FLAGS
+Specify the DNS flags in the DNS header.
+.It Fl i Ar ID
+Specify the DNS ID in the DNS header.
+.It Fl k
+Use TCP instead of UDP when injecting DNS packets.
+.It Fl P Ar FILE
+This will cause
+.Nm
+to use the specified
+.Ar FILE
+as the payload when injecting DNS packets.  For packets injected using
+the raw interface (where
+.Fl d
+is not used), the maximum payload size is 65443 bytes for DNS packets
+injected using TCP, and 65455 for DNS packets injected using UDP.  For
+packets injected using the link layer interface (where
+.Fl d
+.Sy IS
+used), the maximum payload size is 1368 bytes for TCP DNS packets, and
+1420 bytes for UDP DNS packets.  Payloads can also be read from stdin by
+specifying
+.Fl P-
+instead.
+.Pp
+Windows systems are limited to a maximum payload size of 1368 bytes for
+TCP DNS packets and 1420 bytes for UDP DNS packets.
+.Pp
+The payload file can consist of any arbitrary data though it will be
+most useful to create a payload resembling the structure of the DNS
+packet specified using the command-line options.  In order to send real
+DNS packets, a payload containing the appropriate record data (as
+specified in the DNS header) must be created manually.
+.It Fl q Ar NUM
+Specify the number of questions in the DNS header.
+.It Fl r Ar NUM
+Specify the number of additional resource records in the DNS header.
+.It Fl v
+Display the injected packet in human readable form.  Use twice to see a
+hexdump of the injected packet with printable ASCII characters on the
+right.  Use three times for a hexdump without decoded ASCII.
+.El
+.Sh TCP OPTIONS
+.Bl -tag -width Ds
+.It Fl Ar NUM
+Specify the acknowledgement number (ACK number) in the TCP header.
+.It Fl f Ar FLAGS
+Specify the TCP flags in the TCP header.
+.Pp
+.Bl -tag -width "-fP" -compact -offset indent
+.It Fl fS
+SYN
+.It Fl fA
+ACK
+.It Fl fR
+RST
+.It Fl fP
+PSH
+.It Fl fF
+FIN
+.It Fl fU
+URG
+.It Fl fE
+ECE
+.It Fl fC
+CWR
+.El
+.Pp
+Flags can be combined in the form
+.Fl fPA .
+.It Fl o Ar FILE
+This will cause
+.Nm
+to use the specified
+.Ar FILE
+as the options when building the TCP header for the injected packet.
+TCP options can be up to 40 bytes in length.  The TCP options file must
+be created manually based upon the desired options.  TCP options can
+also be read from stdin by specifying
+.Fl o-
+instead.
+.It Fl s Ar NUM
+Specify the sequence number in the TCP header.
+.It Fl u Ar OFFSET
+Specify the urgent pointer offset in the TCP header.
+.It Fl w Ar SIZE
+Specify the window size (bytes) in the TCP header.
+.It Fl x Ar PORT
+Specify the TCP source port in the TCP header.
+.It Fl y Ar PORT
+Specify the TCP destination port in the TCP header.
+.El
+.Sh UDP OPTIONS
+.Bl -tag -width Ds
+.It Fl x Ar PORT
+Source Port of injected packet.
+.It Fl y Ar PORT
+Target Port of injected packet.
+.El
+.Sh IP OPTIONS
+.Bl -tag -width Ds
+.It Fl D Ar ADDR
+Specify the destination IP address in the IP header.
+.It Fl F Ar OPT
+Specify the fragmentation options in the IP header:
+.Pp
+.Bl -tag -width "-F offset" -compact -offset indent
+.It Fl FD
+don't fragment
+.It Fl FM
+more fragments
+.It Fl FR
+reserved flag
+.It Fl F Ar offset
+.El
+.Pp
+IP fragmentation options can be specified individually or combined into
+a single argument to the
+.Fl F
+command line switch by separating the options with commas (eg.
+.Fl FD,M )
+or spaces (eg.
+.Fl FM Ar 223 ) .
+The IP fragmentation offset is a 13-bit field with valid values from 0
+to 8189.  Don't fragment (DF), more fragments (MF) and the reserved flag
+(RESERVED or RB) are 1-bit fields.
+.Pp
+.Sy NOTE:
+Under normal conditions, the reserved flag is unset.
+.It Fl Ar ID
+Specify the IP ID in the IP header.
+.It Fl O Ar FILE
+This will cause
+.Nm
+to use the specified
+.Ar FILE
+as the options when building the IP header for the injected packet.  IP
+options can be up to 40 bytes in length.  The IP options file must be
+created manually based upon the desired options.  IP options can also be
+read from stdin by specifying
+.Fl O-
+instead.
+.It Fl S ADDR
+Specify the source IP address in the IP header.
+.It Fl t TOS
+Specify the IP type-of-service (TOS) in the IP header.  Valid type
+of service values:
+.Pp
+.Bl -tag -width 24 -offset indent -compact
+.It 2
+Minimize monetary cost
+.It 4
+Maximize reliability
+.It 8
+Maximize throughput
+.It 24
+Minimize delay
+.El
+.Pp
+.Sy NOTE:
+Under normal conditions, only one type of service is set within a
+packet.  To specify multiple types, specify the sum of the desired
+values as the type of service.
+.It Fl T Ar TTL
+Specify the IP time-to-live (TTL) in the IP header.
+.El
+.Sh DATA LINK OPTIONS
+.Bl -tag -width Ds
+.It Fl d Ar IFNAME
+Specify the name (for UNIX-like systems) or the number (for Windows systems) 
+of the
+.Ar IFNAME
+to use (eg. fxp0, eth0, hme0, 1).
+.It Fl H Ar MAC
+Specify the source
+.Ar MAC
+address,
+.Ar ( XX:XX:XX:XX:XX:XX ) .
+.It Fl M Ar MAC
+Specify the destination
+.Ar MAC
+address,
+.Ar ( XX:XX:XX:XX:XX:XX ) .
+.It Fl Z
+Lists the available network interfaces by number for use in link-layer 
+injection.
+.Pp
+.Sy NOTE:
+This feature is only relevant to Windows systems.
+.El
+.Sh DIAGNOSTICS
+Nemesis-dns returns 0 on a successful exit, 1 if it exits on an error.
+.Sh SEE ALSO
+.Xr nemesis-arp 1 ,
+.Xr nemesis-dhcp 1 ,
+.Xr nemesis-ethernet 1 ,
+.Xr nemesis-icmp 1 ,
+.Xr nemesis-igmp 1 ,
+.Xr nemesis-ip 1 ,
+.Xr nemesis-ospf 1 ,
+.Xr nemesis-rip 1 ,
+.Xr nemesis-tcp 1 ,
+.Xr nemesis-udp 1 .
+.Sh AUTHORS
+.An Mark Grimes Aq Mt mark@stateful.net
+and
+.An Jeff Nathan Aq Mt jeff@snort.org
+.Sh BUGS
+An interface for users to create DNS packet payloads should be created.
+.Pp
+Please report bugs at
+.Lk https://github.com/libnet/nemesis/issues
