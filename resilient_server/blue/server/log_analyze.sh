@@ -17,8 +17,8 @@ while sleep 1; do
   new_rows_count=$(expr $count_aux - $count_rows) # Calculate the number of new rows
   count_rows=$count_aux                           # Assign the actual number of rows to the count
 
-  # Obtain the content of the new requests
-  rows_val=$(awk '{print "\t src: "$1 "\t\t content: "$6,$7,$8;}' $ACCESS_LOG | tail -"$new_rows_count")
+  # Obtain the content of the new requests  TODO Change the hardcoded IP
+  rows_val=$(awk '{if (!($1=="10.1.5.3")) print "\t src: "$1 "\t\t content: "$6,$7,$8;}' $ACCESS_LOG | tail -"$new_rows_count")
 
   ############################ Error Logs ############################
   count_aux_err=$(awk 'BEGIN{count=0} {count++;} END {print count}' $ERROR_LOG) # Total amount of current rows - Error Log
