@@ -15,11 +15,20 @@
         1. use hash limit in ip tables
         2. use snort rules to block Keep-Alive and No Cache
 
-  3. apache2-utils => stress test the server with ab -c 200 -n 5000 -r <url>
+  3. 1. apache2-utils => stress test the server with ab -c 200 -n 5000 -r <url>
     Possible defense: qos_module
+     2. JMeter - similar to apache benchmark, but more powerful
+     https://jmeter.apache.org/usermanual/jmeter_distributed_testing_step_by_step.pdf
 
   4. Traditional flooding tools like flooder or hping3
     Possible defense: hashlimit on iptables or rate_limit in snort.
+
+  5. Tor's hammer => slow post DOS
+  6. Hulk => stress testing tool
+        Might fail to hide the identity => traffic can be blocked
+  7. DAVOSET=> tool for DDos attack via Abuse of Functionality and XML external entities.
+  8. DDOSIM => simulates several zombie hosts which create full TCP connections to target server
+  9. Nemesis => tool for packets crafting and injection
 
 
 ## Blue Team:

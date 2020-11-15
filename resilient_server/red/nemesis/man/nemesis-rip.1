@@ -1,0 +1,251 @@
+.\" THE NEMESIS PROJECT
+.\" Copyright (C) 1999, 2000 Mark Grimes <mark@stateful.net>
+.\" Copyright (C) 2001 - 2003 Jeff Nathan <jeff@snort.org>
+.\" Copyright (C) 2019 Joachim Nilsson <troglobit@gmail.com>
+.\"
+.Dd Dec 16, 2019
+.Dt nemesis-rip 1 USM
+.Sh NAME
+.Nm nemesis-rip
+.Nd RIP Protocol (The Nemesis Project)
+.Sh SYNOPSIS
+.Nm
+.Op Fl vZ?
+.Op Fl a Ar AF
+.Op Fl c Ar CMD
+.Op Fl d Ar IFNAME
+.Op Fl D Ar ADDR
+.Op Fl F Ar OPT
+.Op Fl h Ar ADDR
+.Op Fl H Ar MAC
+.Op Fl i Ar ADDR
+.Op Fl I Ar ID
+.Op Fl k Ar MASK
+.Op Fl m Ar METRIC
+.Op Fl M Ar MAC
+.Op Fl O Ar FILE
+.Op Fl P Ar FILE
+.Op Fl r Ar DOMAIN
+.Op Fl R Ar TAG
+.Op Fl S Ar ADDR
+.Op Fl t Ar TOS
+.Op Fl T Ar TTL
+.Op Fl V Ar VER
+.Op Fl x Ar PORT
+.Op Fl y Ar PORT
+.Sh DESCRIPTION
+.Nm nemesis
+is designed to be a command line-based, portable human IP stack for
+UNIX-like and Windows systems.  The suite is broken down by protocol,
+and should allow for useful scripting of injected packets from simple
+shell scripts.
+.Pp
+.Nm
+provides an interface to craft and inject RIP packets allowing the user
+to specify any portion of a RIP packet as well as lower-level IP packet
+information.
+.Sh RIP Options
+.Bl -tag -width Ds
+.It Fl a Ar AF
+Specify the RIP address family within the RIP header.
+.Pp
+.Sy NOTE:
+Under normal conditions, the address-family value is
+.Ql 2 ,
+indicating IP.
+.It Fl c Ar CMD
+Specify the RIP command within the RIP header.  Valid RIP commands are:
+.Pp
+.Bl -tag -width D -compact -offset indent
+.It 1
+Request
+.It 2
+Reply
+.It 3
+Trace on - obsolete
+.It 4
+Trace off - obsolete
+.It 5
+Poll
+.It 6
+Poll entry
+.It 7
+Max
+.El
+.Pp
+.Sy NOTE
+Under normal conditions, only commands 1 (Request) and 2 (Reply) are
+valid.
+.It Fl h Ar ADDR
+Specify the RIP next-hop address within the RIP header.  The next hop
+address value is 0 for RIP version 1.  For RIP version 2 the next hop
+address specifies the IP address of the next route in the path to the
+destination host or network.  Also for RIP version 2, if this value is
+0, the next hop address is the IP address of the router originating the
+RIP update.
+.It Fl i Ar ADDR
+Specify the RIP route address within the RIP header.  This value species
+the destination network, subnet or host of route in the form of an IP
+address.
+.It Fl k Ar MASK
+Specify the RIP network address mask within the RIP header.  The network
+address mask value is 0 for RIP version 1.  For RIP version 2 the
+network address mask specifies the mask associated with the route.
+.It Fl m Ar METRIC
+Specify the RIP metric within the RIP header.  Valid RIP-metric values
+range from 1 to 16.  A RIP-metric value of 16 (infinity) is used to
+invalidate a route.
+.It Fl P Ar FILE
+This will cause
+.Nm
+to use the specified payload file as the payload when injecting RIP
+packets.  For packets injected using the raw interface (where
+.Fl d
+is not used), the maximum payload size is 65393 bytes.  For packets
+injected using the link layer interface (where
+.Fl d
+IS used), the maximum payload size is 1358 bytes.  Payloads can also be
+read from stdin by specifying
+.Ql Fl P-
+instead.
+.Pp
+Windows systems are limited to a maximum payload size of 1358 bytes for
+RIP packets.
+.It Fl r Ar DOMAIN
+Specify the RIP routing domain within the RIP header.  A routing domain
+value of 0 is used for RIP version 1.  For RIP version 2 the routing
+domain field is used to identify a unique RIP process on the host or
+router.
+.It Fl R Ar TAG
+Specify the RIP route tag within the RIP header.  The RIP route tag
+value is used to support exterior gatetway protocols.  A route tag value
+of 0 is used for RIP version 1.  For RIP version 2 the route tag field
+will contain the autonomous system (AS) number for exterior gateway
+protocol (EGP) and border gateway protocol (BGP).  RIP version 2
+preserves this value when a route is re-advertised.
+.It Fl V Ar VER
+Specify the RIP version within the RIP header.
+.Sy NOTE:
+Under normal conditions only versions 1 and 2 are valid.
+.It Fl v
+Display the injected packet in human readable form.  Use twice to see a
+hexdump of the injected packet with printable ASCII characters on the
+right.  Use three times for a hexdump without decoded ASCII.
+.El
+.Sh UDP OPTIONS
+.Bl -tag -width Ds
+.It Fl x Ar PORT
+Specify the source port within the UDP header.
+.It Fl y Ar PORT
+Specify the destintion port within the UDP header.
+.El
+.Sh IP OPTIONS
+.Bl -tag -width Ds
+.It Fl D Ar ADDR
+Specify the destination IP address within the IP header.
+.It Fl F Ar OPT
+Specify the fragmentation options in the IP header:
+.Pp
+.Bl -tag -width "-F offset" -compact -offset indent
+.It Fl FD
+don't fragment
+.It Fl FM
+more fragments
+.It Fl FR
+reserved flag
+.It Fl F Ar offset
+.El
+.Pp
+IP fragmentation options can be specified individually or combined into
+a single argument to the
+.Fl F
+command line switch by separating the options with commas (eg.
+.Fl FD,M )
+or spaces (eg.
+.Fl FM Ar 223 ) .
+The IP fragmentation offset is a 13-bit field with valid values from 0
+to 8189.  Don't fragment (DF), more fragments (MF) and the reserved flag
+(RESERVED or RB) are 1-bit fields.
+.Pp
+.Sy NOTE:
+Under normal conditions, the reserved flag is unset.
+.It Fl I Ar ID
+Specify the IP ID within the IP header.
+.It Fl O Ar FILE
+This will cause
+.Nm
+to use the specified IP options file as the options when building the IP
+header for the injected packet.  IP options can be up to 40 bytes in
+length.  The IP options file must be created manually based upon the
+desired options.  IP options can also be read from stdin by specifying
+.Fl O-
+instead.
+.It Fl S Ar ADDR
+Specify the source IP address within the IP header.
+.It Fl t Ar TOS
+Specify the IP type of service (TOS) within the IP header.  Valid type
+of service values:
+.Pp
+.Bl -tag -width 24 -offset indent -compact
+.It 2
+Minimize monetary cost
+.It 4
+Maximize reliability
+.It 8
+Maximize throughput
+.It 24
+Minimize delay
+.El
+.Pp
+.Sy NOTE:
+Under normal conditions, only one type of service is set within a
+packet.  To specify multiple types, specify the sum of the desired
+values as the type of service.
+.It Fl T Ar TTL
+Specify the IP time-to-live (TTL) in the IP header.
+.El
+.Sh DATA LINK OPTIONS
+.Bl -tag -width Ds
+.It Fl d Ar IFNAME
+Specify the name (for UNIX-like systems) or the number (for Windows
+systems) of the
+.Ar IFNAME
+to use (eg. fxp0, eth0, hme0, 1).
+.It Fl H Ar MAC
+Specify the source
+.Ar MAC
+address,
+.Ar ( XX:XX:XX:XX:XX:XX ) .
+.It Fl M Ar MAC
+Specify the destination
+.Ar MAC
+address,
+.Ar ( XX:XX:XX:XX:XX:XX ) .
+.It Fl Z
+Lists the available network interfaces by number for use in link-layer
+injection.
+.Pp
+.Sy NOTE:
+This feature is only relevant to Windows systems.
+.El
+.Sh DIAGNOSTICS
+.Nm
+returns 0 on a successful exit, 1 if it exits on an error.
+.Sh SEE ALSO
+.Xr nemesis-arp 1 ,
+.Xr nemesis-dhcp 1 ,
+.Xr nemesis-dns 1 ,
+.Xr nemesis-ethernet 1 ,
+.Xr nemesis-icmp 1 ,
+.Xr nemesis-igmp 1 ,
+.Xr nemesis-ip 1 ,
+.Xr nemesis-ospf 1 ,
+.Xr nemesis-tcp 1 .
+.Xr nemesis-udp 1 ,
+.Sh AUTHORS
+.An Mark Grimes Aq Mt mark@stateful.net
+and
+.An Jeff Nathan Aq Mt jeff@snort.org
+.Sh BUGS
+Please report at
+.Lk https://github.com/libnet/nemesis/issues
