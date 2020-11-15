@@ -10,6 +10,9 @@
 
 #!/bin/bash
 
+ETH_SERVER=$(ip route get 10.1.5.3 | grep 10.1.5.3 | awk '{print $5}')
+ETH_ROUTER=$(ip route get 10.1.1.3 | grep 10.1.1.3 | awk '{print $5}')
+
 sudo iptables -F
 
 # Accept any related or established connections
@@ -63,7 +66,7 @@ sudo iptables -A OUTPUT -p udp --dport 123 --sport 123 -j ACCEPT
 sudo iptables -A OUTPUT -p tcp -m tcp --dport 80 -m conntrack --ctstate NEW -j ACCEPT
 
 # Restrict the number of connections (to 20) per single IP address
-sudo iptables -A INPUT -p tcp --syn --dport 80 -m connlimit --connlimit-above 20 --connlimit-mask 32 -j REJECT 
+sudo iptables -A FORWARD -i $ETH_ROUTER -o $ETH_SERVER -p tcp --syn --dport 80 -m connlimit --connlimit-above 20 --connlimit-mask 32 -j DROP
 ##--reject-with tcp-reset
 
 # Limit NEW TCP connections per seconds
