@@ -21,7 +21,7 @@ my $start_time = [Time::HiRes::gettimeofday()];
 STDOUT->autoflush(1);
 
 while (<>) {
-  if (m/10.1.2.2 >/) {
+  if (m/10.1.2.2.(\d+) >/) {
     if (m/ UDP/) {
       if (/ length (\d+):/) {
         $bytes_this_interval_UDP[0] += $1;
@@ -53,7 +53,7 @@ while (<>) {
         $packetnum_other[0] += 1;
       }
     }
-  } elsif (m/10.1.3.2 >/) {
+  } elsif (m/10.1.3.2.(\d+) >/) {
     if (m/ UDP/) {
       if (/ length (\d+):/) {
         $bytes_this_interval_UDP[1] += $1;
@@ -85,7 +85,7 @@ while (<>) {
         $packetnum_other[1] += 1;
       }
     }
-  } elsif (m/10.1.4.2 >/) {
+  } elsif (m/10.1.4.2.(\d+) >/) {
     if (m/ UDP/) {
       if (/ length (\d+):/) {
         $bytes_this_interval_UDP[2] += $1;
@@ -117,7 +117,7 @@ while (<>) {
         $packetnum_other[2] += 1;
       }
     }
-  } else {
+  } elsif (m/^(10.1.5.3.(\d+) >)/) {
     if (m/ UDP/) {
       if (/ length (\d+):/) {
         $bytes_this_interval_UDP[3] += $1;
