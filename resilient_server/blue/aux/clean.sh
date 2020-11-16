@@ -29,4 +29,4 @@ deter_user_path="/users/$deter_user"      # Path to the default folder of the de
 
 project="client1.CCTF-G2.OffTech"
 
-ssh -tt "$ssh_user" "ssh -tt $project 'rm -r $deter_user_path/blue; rm -r $deter_user_path/resilient_server;exit'; exit;"
+ssh -tt "$ssh_user" "ssh -tt $project 'rm -r $deter_user_path/blue; rm -r $deter_user_path/resilient_server;exit;' exit;"
