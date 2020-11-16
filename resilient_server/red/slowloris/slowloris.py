@@ -112,7 +112,7 @@ def init_socket(ip):
 
     s.connect((ip, args.port))
 
-    s.send("GET /{}.html HTTP/1.1\r\n".format(random.randint(1, 10)).encode("utf-8"))
+    s.send("GET {}.html HTTP/1.1\r\n".format(random.randint(1, 10)).encode("utf-8"))
     s.send("Host: {}\r\n".format(ip).encode("utf-8"))
     if args.randuseragent:
         user_agents = ""

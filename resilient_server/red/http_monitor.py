@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+## install setuptools: sudo apt update && sudo apt install python3-setuptools
+## cd scapy
+## sudo python3 setup.py install
+
 from scapy.all import *
 from scapy.layers.http import HTTPRequest
 
