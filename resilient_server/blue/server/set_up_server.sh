@@ -73,11 +73,7 @@ path_to_mod="/etc/apache2/mods-available/"  # Path to the mods folder
 echo "------------ Installing libapache2-mod-qos ------------"
 ssh -tt "$ssh_user" "ssh -tt $project 'sudo apt install libapache2-mod-qos; exit;' exit;"
 
-echo "$file_path" "$ssh_user:$deter_user_path"
-
 scp "$file_path" "$ssh_user$deter_user_path"
-ssh -tt "$ssh_user" "ssh -tt $project 'sudo cp qos.conf $path_to_mod; exit;' exit;"
-
+ssh -tt "$ssh_user" "ssh -tt $project 'sudo cp qos.conf $path_to_mod; sudo service apache2 restart; exit;' exit;"
 echo "------------ libapache2-mod-qos Installed------------"
 
-# /etc/apache2/mods-available
