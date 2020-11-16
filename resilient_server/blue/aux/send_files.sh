@@ -58,5 +58,3 @@ project_path=$(calc_path "$reference_path") # Create the path on which the comma
 project_path="$project_path/blue" # In case only blue wants to be sent
 
 scp -r "$project_path" "$ssh_user$deter_user_path"
-
-# for i in {1..10}; do sudo touch $i.html; done TODO Add this to create the HTML pages at the start
