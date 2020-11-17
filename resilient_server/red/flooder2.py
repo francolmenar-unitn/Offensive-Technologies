@@ -6,7 +6,7 @@ import sys, random, argparse
 def usage():
 	print("SYN FLOOD attack script")
 	print("")
-	print("Usage: ./synflood.py ")
+	print("Usage: ./flooder2.py ")
 	print("-t --threads                 - Number of concurrent threads to use [default 50]")
 	print("-d --destination             - Ip of destination")
 	print("-p --port                    - Port of destination")
