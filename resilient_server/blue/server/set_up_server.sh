@@ -2,7 +2,7 @@
 
 # Treat the input argument of the bash script
 read_input() {
-  username='otech2ae' # Default username
+  username='otech2al' # Default username
 
   ############## Reading inputs ##############
   while [[ $# -gt 0 ]]; do
