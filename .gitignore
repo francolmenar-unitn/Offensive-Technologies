@@ -1,7 +1,8 @@
 .idea
 #Other stuff
 resilient_server/red/*.pcap
-
+resilient_server/red/distributed_arp_spoofer.py
+resilient_server/red/smurf.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
