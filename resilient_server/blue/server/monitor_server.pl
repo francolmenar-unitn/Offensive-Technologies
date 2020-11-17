@@ -117,7 +117,9 @@ while (<>) {
         $packetnum_other[2] += 1;
       }
     }
-  } elsif (m/> ^(10.1.5.3.(\d+))/) {
+  } elsif (m/> 10.1.5.3.(\d+)/) {
+    
+  } else {
     if (m/ UDP/) {
       if (/ length (\d+):/) {
         $bytes_this_interval_UDP[3] += $1;

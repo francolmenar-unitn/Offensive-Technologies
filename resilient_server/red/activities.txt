@@ -54,8 +54,8 @@ Possible solutions for Denial Of Service
 Milestones:
     1. raw_socket.py, goldeneye.py and apache2-utils
     2. raw_sockets.py, script with hping in different modifies
-    3. goldeneye.py
-    4. slowloris.py
+    3. goldeneye.py, jmeter
+    4. slowloris.py, torshammer
 
 
 Blue Team:

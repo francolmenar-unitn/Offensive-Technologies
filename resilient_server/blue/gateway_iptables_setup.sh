@@ -33,10 +33,10 @@ sudo iptables -A FORWARD -i $server_interface -o $router_interface -p tcp --spor
 ## ICMP CONNECTIONS
 ### ALL ICMP ECHO REQUESTS ARE LIMITED AND SENT TO THE RATE-LIMIT CHAIN
 ### ECHO REPLIES ARE ALLOWED TO PASS
-sudo iptables -A INPUT -i $router_interface -p icmp -m hashlimit --hashlimit-name icmp --hashlimit-mode srcip --hashlimit 100/second --hashlimit-burst 5 -j ACCEPT
-sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT
-sudo iptables -A FORWARD -i $router_interface -o $server_interface -p icmp -m hashlimit --hashlimit-name icmp --hashlimit-mode srcip --hashlimit 3/second --hashlimit-burst 5 -j ACCEPT
-sudo iptables -A FORWARD -i $server_interface -o $router_interface -p icmp --icmp-type echo-reply -j ACCEPT
+#sudo iptables -A INPUT -i $router_interface -p icmp -m hashlimit --hashlimit-name icmp --hashlimit-mode srcip --hashlimit 100/second --hashlimit-burst 5 -j ACCEPT
+#sudo iptables -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT
+#sudo iptables -A FORWARD -i $router_interface -o $server_interface -p icmp -m hashlimit --hashlimit-name icmp --hashlimit-mode srcip --hashlimit 3/second --hashlimit-burst 5 -j ACCEPT
+#sudo iptables -A FORWARD -i $server_interface -o $router_interface -p icmp --icmp-type echo-reply -j ACCEPT
 
 ## RATE LIMIT CHAIN
 ### IF A SINGLE IP SENDS CAN SEND ONLY 10 P/S
@@ -47,6 +47,10 @@ sudo iptables -A RATE-LIMIT -j DROP
 
 ## UDP CONNECTIONS
 #sudo iptables -A FORWARD -i <outer interface> -p udp --dport 80 -j DROP <- they are dropped by the default policy.
+
+## RULES FOR THE CHECK_RESPONSE SCRIPT 
+sudo iptables -A OUTPUT -d 10.1.5.2 -j ACCEPT 
+sudo iptables -A INPUT -s 10.1.5.2 -j ACCEPT
 
 ## SET DEFAULT POLICY TO DROP
 sudo iptables -P INPUT DROP
