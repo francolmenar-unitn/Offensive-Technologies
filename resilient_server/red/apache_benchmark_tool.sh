@@ -9,7 +9,7 @@ TARGET=""
 if [ "$#" -ne 3 ];then
     THREADS=400
     REQUESTS=50000
-    TARGET="http://10.1.5.2/"
+    TARGET="http://10.1.5.2/1.html"
 else
     THREADS=$1
     REQUESTS=$2
