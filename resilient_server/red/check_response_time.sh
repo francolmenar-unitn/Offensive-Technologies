@@ -6,7 +6,9 @@ if [ "$#" -ne 2 ];then
 fi
 
 while : 
-do
-    curl -s -w 'Lookup time:\t%{time_total}'\\n -o /dev/null $1
+do 
+    number=$((1 + $RANDOM % 10))
+    url="${1}/${number}.html"
+    curl -s -w 'Lookup time:\t%{time_total}'\\n -o /dev/null $url
     sleep $2
 done

