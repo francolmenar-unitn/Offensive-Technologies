@@ -1,0 +1,9 @@
+Red:
+    1 SQL Injection on the user parameter when requesting the balance.
+        In user param: a' OR 1=1 -- 
+        With sqlmap: sqlmap -r request.txt -p "user" --dbs
+    2 Reflected XSS in the same place.
+    3 No authentication when making deposits and withdrawals.
+    4 TO CHECK
+        Integer overflow in amount
+        Insert amount with negative sign
