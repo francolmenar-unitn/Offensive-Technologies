@@ -8,13 +8,13 @@ user=$(whoami)
 TEMP_PATH="/users/$user/secure_server/blue"
 
 echo "Changing mysql root password..."
-sudo mysql -u 'root' < $TEMP_PATH/root.sql
+sudo mysql -u'root' < $TEMP_PATH/root.sql
 
 echo "Creating user for web application..."
-mysql -u "root" -p < $TEMP_PATH/user.sql
+mysql -u"root" -p"iamrootbitch1984" < $TEMP_PATH/user.sql
 
 echo "Cleaning up records on the db..."
-mysql -u "root" -p < $TEMP_PATH/cleanup.sql
+mysql -u"root" -p"iamrootbitch1984" < $TEMP_PATH/cleanup.sql
 
 echo "Finished setting up secure mysql."
 

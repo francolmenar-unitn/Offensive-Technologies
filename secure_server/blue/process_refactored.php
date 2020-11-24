@@ -39,17 +39,23 @@
 
     switch($choice){
         case "register":
-            $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
-            $stm->bind_param("ss", $user, $pass);
-            $stm->execute() or die(mysqli_error($mysqli));
-            $result = $stm->get_result();
-            die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+            $check = checkUserExists($mysqli, $user);
+            if($check == null){
+                $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
+                $stm->bind_param("ss", $user, $pass);
+                $stm->execute() or die("Ooops something went wrong... Try again.");
+                $result = $stm->get_result();
+                die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+            }else{
+                exit("User already exists.</body></html>");
+            }
+            
             break;
 
         case "balance":
             $row = checkAuth($mysqli, $user);
             if($row['pass'] != $pass){
-                exit("Invalid authentication...");
+                exit("Invalid authentication...</body></html>");
             }else{
                 $total = getUserBalance($mysqli, $user);
 
@@ -58,7 +64,7 @@
 
                 $stm2 = $mysqli->prepare("SELECT * FROM transfers where user = ? LIMIT 10");
                 $stm2->bind_param("s", $user);
-                $stm2->execute() or die(mysqli_error($mysqli));
+                $stm2->execute() or die("Ooops something went wrong... Try again.</body></html>");
                 $result = $stm2->get_result();
 
                 while ($row = $result->fetch_array()) {
@@ -78,21 +84,21 @@
         case "deposit":
             $row = checkAuth($mysqli, $user);
             if($row['pass'] != $pass){
-                exit("Invalid authentication...");
+                exit("Invalid authentication...</body></html>");
             }else{
                 if(gettype($amount) != "integer"){
-                    exit("Need an integer for this operation...");
+                    exit("Need an integer for this operation...</body></html>");
                 }
                 if($amount < 0){
-                    exit("You cannot deposit a negative amount...");
+                    exit("You cannot deposit a negative amount...</body></html>");
                 }
                 if($amount === 0){
-                    exit("The deposit cannot be 0");
+                    exit("The deposit cannot be 0</body></html>");
                 }
                 ## Check for overflow...
                 $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
                 $stm->bind_param("si", $user, $amount);
-                $stm->execute() or die(mysqli_error($mysqli));
+                $stm->execute() or die("Ooops something went wrong... Try again.</body></html>");
                 $result = $stm->get_result();
 
                 die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
@@ -103,28 +109,28 @@
         case "withdraw":
             $row = checkAuth($mysqli, $user);
             if($row['pass'] != $pass){
-                exit("Invalid authentication...");
+                exit("Invalid authentication...</body></html>");
             }else{
                 if(gettype($amount) != "integer"){
-                    exit("Need an integer for this operation...");
+                    exit("Need an integer for this operation...</body></html>");
                 }
                 if($amount < 0){
-                    exit("You cannot withdraw a negative amount...");
+                    exit("You cannot withdraw a negative amount...</body></html>");
                 }
 
                 $total = getUserBalance($mysqli, $user);
                 if($total == 0){
-                    exit("Impossible to make a withdrawal. No money currently in the account.");
+                    exit("Impossible to make a withdrawal. No money currently in the account.</body></html>");
                 }
                 if($total < $amount){
-                    exit("Not enough money for withdrawal...");
+                    exit("Not enough money for withdrawal...</body></html>");
                 }
 
                 $amount = $amount * -1;
 
-                $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)"); //Check how to remove money
+                $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
                 $stm->bind_param("si", $user, $amount);
-                $stm->execute() or die(mysqli_error($mysqli));
+                $stm->execute() or die("Ooops something went wrong... Try again.</body></html>");
                 $result = $stm->get_result();
 
                 die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
@@ -132,7 +138,7 @@
             break;
 
         default:
-            exit("Nice you got to this page. Unfortunately there is nothing here lol. Try again!");
+            exit("Nice you got to this page. Unfortunately there is nothing here lol. Try again!</body></html>");
       
     }
 
@@ -152,10 +158,20 @@
     }
 
 
+    function checkUserExists($mysqli, $user){
+        $stm = $mysqli->prepare("SELECT user FROM users WHERE user = ?");
+        $stm->bind_param("s", $user);
+        $stm->execute() or die("Ooops something went wrong... Try again.</body></html>");
+        $result = $stm->get_result();
+        $row = $result->fetch_array();
+
+        return $row;
+    }
+
     function checkAuth($mysqli, $user){
         $stm = $mysqli->prepare("SELECT pass FROM users WHERE user = ?");
         $stm->bind_param("s", $user);
-        $stm->execute() or die(mysqli_error($mysqli));
+        $stm->execute() or die("Ooops something went wrong... Try again.</body></html>");
         $result = $stm->get_result();
         $row = $result->fetch_array();
 
@@ -165,7 +181,7 @@
     function getUserBalance($mysqli, $user){
         $stm = $mysqli->prepare("SELECT SUM(amount) AS total FROM transfers where user = ? ");
         $stm->bind_param("s", $user);
-        $stm->execute() or die(mysqli_error($mysqli));
+        $stm->execute() or die("Ooops something went wrong... Try again.</body></html>");
         $result = $stm->get_result();
 
         $row = $result->fetch_array();
