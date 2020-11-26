@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="robots" content="index,nofollow">
+
+<title>CCTF: Secure Server - USC/ISI</title>
+
+
+<link rel="stylesheet" type="text/css" charset="utf-8" media="all"
+      href="https://www.isi.deterlab.net/common.css">
+<link rel="stylesheet" type="text/css" charset="utf-8" media="screen"
+      href="https://www.isi.deterlab.net/screen.css">
+
+</head><body dir="ltr" lang="en">
+<hr>
+<div id="page" dir="ltr" lang="en">
+<h1>CCTF: Secure Server - USC/ISI</h1>
+<div class="author">Created by: Jelena Mirkovic, USC/ISI, sunshine@isi.edu
+
+</div>
+
+<table border=0>
+<tr>
+<td>
+<div class="table-of-contents">
+<div class="table-of-contents-heading">Contents</div>
+<ol type="1">
+<li><a href="#overview">Overview</a>
+<li><a href="#blue">Blue Team Tasks</a>
+<li><a href="#red">Red Team Tasks</a>
+<li><a href="#scoring">Scoring</a>
+<li><a href="#dynamics">Exercise Dynamics</a>
+<li><a href="#grading">Grading</a>
+<li><a href="#links">Useful Links</a>
+</ol>
+</div>
+
+<span class="anchor" id="overview"></span> 
+<h2>Overview</h2>
+<P>This exercise lets students practice finding and patching vulnerabilities, as well as exploiting them. Students will be divided into 3-4 person teams. Each team will play the defender role (Blue team) for their own system and the attacker role (Red team) for another team's system. 
+
+<P>Each network in the exercise will consist of six machines - a <tt>server</tt> and a <tt>gateway</tt> machine under the control of the Blue Team, three <tt>client</tt> machines under the control of the Red Team and a <tt>router</tt> machine that neither team controls. Links between clients and the <tt>router</tt> and the link between the <tt>gateway</tt> and the <tt>server</tt>  are 100 Mbps. The link between the <tt>gateway</tt> and the <tt>router</tt> is 1 Gbps. This allows the clients to attempt to create DoS conditions by flooding the link between the <tt>gateway</tt> and the <tt>server</tt>. The network for the exercise is shown below and the NS file for it resides at <tt>/share/education/SecureServer_USC/cctf.ns</tt>.
+
+<P><IMG SRC="ctf2.png">
+
+<span class="anchor" id="blue"></span> 
+<h2>Blue Team Tasks</h2>
+
+<P>This team will control the <tt>server</tt> and the <tt>gateway</tt> machine, connected by 100 Mbps link. The <tt>server</tt> is a classical LAMP server and will have some php scripts and MySql database already set up. The scripts allow users to register (insert username and pass into the database) and to deposit or withdraw money from their accounts, or to check balance and transaction history. The scripts are poorly written. There is no input validity checking and no user authentication. Access to database is with a root account. Existing users have weak passwords too.
+
+<P>The task of the Blue team is to fix this installation so that it is more secure. Any approach is OK to use but you must keep DB schema unchanged. You can reinstall MySql, change user account passwords (but you must keep existing users), change PHP code, etc. 
+
+<P>The Blue team should also develop a monitoring program for the <tt>gateway</tt> machine and for the <tt>server</tt> so that they can quickly spot if the Red team launches denial-of-service and so that they can defend from it. One way to defend from it is to implement some filtering at the <tt>gateway</tt> machine via <t>iptables</tt>.
+<P><div class="warning">
+Make sure you understand how <tt>iptables</tt> command works before you use it as you may cut off your access to a given machine in DeterLab if you filter out some specific traffic to/from it, e.g., all outgoing traffic. The only way to recover from this is to reboot the machine using Web portal for DeterLab. Click on your Experiment, then click on the machine's name in the Node List (e.g., pc133) and then choose "Reboot node" from the top left menu. It usually takes 5-10 minutes for the machine to come up again. 
+</div>
+
+
+<P>The goal of the Blue team is to keep accounts of existing users intact, to ensure correct operation of the program (e.g., one cannot withdraw money from an account with a zero balance), and to keep the server up and running. If the server gets compromised or attacked, the Blue team should strive to bring it back up quickly and to patch it.
+
+<P>When developing and practicing swap in an experiment using <tt>/share/education/SecureServer_USC/cctf.ns</tt> file. Then on the <tt>server</tt> machine run <tt>/share/education/SecureServer_USC/install_server</tt> (type "rootmysql" during MySql installation). This will lead to the identical setup as the one during SecureServer exercise.
+
+<h3>Assumptions and Requirements</h3>
+
+<P>You can borrow code from online sources but you need to understand what it does and how.
+
+<h3>Milestones</h3>
+<P>Here are some milestones that your team must reach BEFORE the exercise. 
+<OL>
+<LI>Patch the vulnerabilities on the <tt>server</tt> machine so that it is not vulnerable to SQL injection and malformed requests or requests that would lead DB into inconsistent state are detected and replied to with an error message.
+<LI>Develop logging at the <tt>server</tt> that will let you automatically check if DB is in consistent state
+<LI>Develop monitoring software on the <tt>gateway</tt> machine that will let you automatically check if <tt>server</tt> getting slow
+<LI>Extend your monitoring software so you can automatically get statistics on number of packets and bytes sent to the server in TCP data, TCP SYN, UDP and ICMP and Total categories so you can diagnose various DDoS attacks. Make sure the software monitors the correct interface.
+<LI>Extend your monitoring software so you can detect number of packets and bytes sent to the server by each client IP. Make sure the software monitors the correct interface.
+<LI>Learn how you would write rules for <tt>iptables</tt> to filter traffic with some characteristics, e.g., by protocol, sender IP, length, TCP flags, etc. You may need to write those rules manually during the exercise but make sure you have tried to write them while preparing for the exercise and that they work correctly. You can check correctness by generating attack traffic with some signature (e.g., packet length, sender IP, protocol, etc.), writing a rule to filter it and checking that that traffic is dropped. You can check for drops in two ways. First, you could run your monitoring software on the interface leading to the <tt>server</tt>. Second, you could use an option with <tt>iptables</tt> that lets you see counts of times a rule was matched. It may be advisable to try both methods for measuring correctness as the first measures what goes to the server and the second shows you that the rule was activated by attack traffic.
+</OL>
+Tasks 1, 2, 3 can be done in parallel and tasks 4, 5 and 6 must be done in sequence.
+
+<span class="anchor" id="red"></span> 
+<h2>Red Team Tasks</h2>
+
+The Red Team will have control over the three client machines. They should program one of those to send only legitimate traffic, and two can be used for various attacks. Since responses to this traffic will be used to evaluate if the server is running, requests must come with at least 1 request per second frequency.
+
+<P>The goal of the Red Team is to succeed in as many of the following attacks as possible:
+<OL>
+<LI>Corrupt the DB accounts of the existing users,
+<LI>Lead the server program into unexpected behavior (e.g., withdraw money that does not exist in an account, corrupt the DB, etc.)
+<LI>Bring down the server (either through compromise or through denial of service). 
+</ol>
+Any attack is allowed, even breaking Blue team's passwords.
+
+<P>When developing and practicing swap in an experiment using <tt>/share/education/SecureServer_USC/cctf.ns</tt> file. Then on the <tt>server</tt> machine run <tt>/share/education/SecureServer_USC/install_server</tt> (type "rootmysql" during MySql installation). This will lead to the identical setup as the one during SecureServer exercise.
+
+<h3>Assumptions and Requirements</h3>
+<P>You can borrow code from online sources but you need to understand what it does and how.
+  
+<h3>Milestones</h3>
+<P>Here are some milestones that your team must reach BEFORE the exercise. 
+<OL>
+<LI>Develop attacks that may lead the <tt>server</tt> into inconsistent state, without using SQL injection.
+<LI>Develop SQL injection attacks.
+<LI>Develop attacks that may crash the <tt>server</tt> because they require it to process too many requests or because requests are malformed.
+<LI>Develop attacks that flood the link between the <tt>gateway</tt> and the <tt>server</tt>. It may be advisable to use raw sockets here to craft packets. It may also be advisable to parameterize attack software so that you can easily change spoofing technique, if any, packet type, packet length, etc.
+<LI>Test ALL your attacks and make sure they do work against vanilla server given to you in the assignment. Then test them against your hardened server. Then iterate between trying to handle those that work against your server and trying to craft new attacks that will bring that even more hardened server down.
+</OL>
+Tasks 1, 2, 3 and 4 can be done in parallel.
+
+<span class="anchor" id="scoring"></span> 
+<H2>Scoring</H2>
+
+The Blue Team receives a point for each message that the server processes and sends a reply for (this could be an error message if the client request was found to be invalid). Conversely the Red Team scores a point for each message that the server cannot process. The Blue Team will also score points for each correct processing of a message, and for incorrect operation points will go to the Red Team. All messages and all replies will be logged at the server by your teacher.
+
+<span class="anchor" id="dynamics"></span> 
+<H2>Exercise Dynamics</H2>
+
+Teams will need to simultaneously act as Blue Team and Red Team
+throughout the 2h exercise. We will then have a 10 min break followed
+by a post-mortem discussion and selection of a winning team.
+
+<span class="anchor" id="grading"></span> 
+<H2>Grading</H2>
+
+Each team member will be graded based on their contribution to the
+team effort, not based on the team's performance. After the exercise
+each team member will submit a report containing the list of
+contributions they made to the team effort - e.g., modules that they
+coded, testing and setup they performed, etc. All team members must
+sign each report. Reports will be delivered to the instructor in class
+on <insert date here>.
+ The grades will be assigned based on the report.
+
+
+<span class="anchor" id="links"></span> 
+<H2>Useful Links</H2>
+
+You can use any programming language you like for any part of your assignment. 
+
+<OL>
+<LI>You can use <tt>netcat</tt> to send packets in a DDoS attack. To install do apt-get install <tt>netcat</tt>. Also see <A HREF="http://www.r3v0.net/docs/Delta/man/nc.html">netcat manual</A>
+<LI>You can use <tt>tcpdump</tt> to record network traffic. You can develop your own scripts to analyze it.
+<LI>You can also look at Web server logs at <tt>/var/log/apache2</tt>
+</OL>
+
+</div>
+</td><td class="new" valign="top"><img width="200" src="intel-sponsor.jpg"></td></tr></table>
+</div>
+<hr>
+Questions & Comments: Prof. Mirkovic at USC-ISI (sunshine at isi.edu)
+<br>
+<br>
+<center><a href="http://www.isi.edu"><img src="isi_logotype.png"></a></center>
+<br>
+<center><a href="http://viterbi.usc.edu"><img src="usc_viterbi_logotype.jpg"></a></center>
+
+</body></html>
