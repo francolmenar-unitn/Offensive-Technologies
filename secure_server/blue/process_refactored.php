@@ -3,8 +3,10 @@
 <body>
 
 <?php
-    error_reporting(E_ALL);
-    ini_set('display_errors','On');
+    #error_reporting(E_ALL);
+    #ini_set('display_errors','On');
+
+    ###################################### PART FOR LOGGING. DO NOT MODIFY ####################################
     $myFile = "/tmp/request.log";
     $fh = fopen($myFile, 'a');
 
@@ -12,6 +14,7 @@
     foreach ($_GET as $key => $value) {
         fwrite($fh, $key . " => " . $value . "\n");
     }
+    ###########################################################################################################
 
     $user = "nobody";
     $pass = "nope";
@@ -41,12 +44,14 @@
         case "register":
             $check = checkUserExists($mysqli, $user);
             if($check == null){
+                $hashed_password = password_hash($pass, PASSWORD_DEFAULT);
                 $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
-                $stm->bind_param("ss", $user, $pass);
+                $stm->bind_param("ss", $user, $hashed_password);
                 $stm->execute() or die("Ooops something went wrong... Try again.");
                 $result = $stm->get_result();
                 die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
             }else{
+                close_streams();
                 exit("User already exists.</body></html>");
             }
             
@@ -54,7 +59,8 @@
 
         case "balance":
             $row = checkAuth($mysqli, $user);
-            if($row['pass'] != $pass){
+            if(!password_verify($pass, $row['pass'])){
+                close_streams();
                 exit("Invalid authentication...</body></html>");
             }else{
                 $total = getUserBalance($mysqli, $user);
@@ -83,16 +89,19 @@
 
         case "deposit":
             $row = checkAuth($mysqli, $user);
-            if($row['pass'] != $pass){
+            if(!password_verify($pass, $row['pass'])){
                 exit("Invalid authentication...</body></html>");
             }else{
                 if(gettype($amount) != "integer"){
+                    close_streams();
                     exit("Need an integer for this operation...</body></html>");
                 }
                 if($amount < 0){
+                    close_streams();
                     exit("You cannot deposit a negative amount...</body></html>");
                 }
                 if($amount === 0){
+                    close_streams();
                     exit("The deposit cannot be 0</body></html>");
                 }
                 ## Check for overflow...
@@ -108,21 +117,27 @@
 
         case "withdraw":
             $row = checkAuth($mysqli, $user);
-            if($row['pass'] != $pass){
+
+            if(!password_verify($pass, $row['pass'])){
+                close_streams();
                 exit("Invalid authentication...</body></html>");
             }else{
                 if(gettype($amount) != "integer"){
+                    close_streams();
                     exit("Need an integer for this operation...</body></html>");
                 }
                 if($amount < 0){
+                    close_streams();
                     exit("You cannot withdraw a negative amount...</body></html>");
                 }
 
                 $total = getUserBalance($mysqli, $user);
                 if($total == 0){
+                    close_streams();
                     exit("Impossible to make a withdrawal. No money currently in the account.</body></html>");
                 }
                 if($total < $amount){
+                    close_streams();
                     exit("Not enough money for withdrawal...</body></html>");
                 }
 
@@ -138,11 +153,12 @@
             break;
 
         default:
+            close_streams();
             exit("Nice you got to this page. Unfortunately there is nothing here lol. Try again!</body></html>");
       
     }
 
-    # Log data for scoring
+    ############################## PART FOR LOGGING. DO NOT MODIFY ########################################
     $query = "SELECT * FROM transfers";
     $result = $mysqli->query($query);
     fwrite($fh, "TRANSFERS\n");
@@ -156,7 +172,7 @@
     while ($row = $result->fetch_array()) {
         fwrite($fh, $row['user'] . " " . $row['pass'] . "\n");
     }
-
+    #######################################################################################################
 
     function checkUserExists($mysqli, $user){
         $stm = $mysqli->prepare("SELECT user FROM users WHERE user = ?");
@@ -188,6 +204,11 @@
         $total = $row['total'];  
         
         return $total;
+    }
+
+    function close_streams(){
+        $GLOBALS["mysqli"]->close();
+        fclose($GLOBALS["fh"]);
     }
 
 ?>
