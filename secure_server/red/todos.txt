@@ -61,4 +61,15 @@ References for vulnerabilities:
             https://www.cvedetails.com/cve/CVE-2019-0211/
             https://www.exploit-db.com/exploits/46676
 
-        2. 
+        2. CVE-2020-11984 => Apache HTTP server 2.4.32 to 2.4.44 mod_proxy_uwsgi info disclosure and possible RCE
+            https://nvd.nist.gov/vuln/detail/CVE-2020-11984
+        
+        3. CVE-2020-9490 => Apache HTTP Server versions 2.4.20 to 2.4.43. A specially crafted value for the 'Cache-Digest' header in a HTTP/2 request would result in a crash when the server actually tries to HTTP/2 PUSH a resource afterwards.
+            https://nvd.nist.gov/vuln/detail/CVE-2020-9490
+
+    MySQL 5.7.31:
+        1. CVE-2020-14812 => Easily exploitable vulnerability allows low privileged attacker with network access via multiple protocols to compromise MySQL Server. Successful attacks of this vulnerability can result in unauthorized ability to cause a hang or frequently repeatable crash (complete DOS) of MySQL Server.
+            https://ubuntu.com/security/CVE-2020-14539
+
+    PHP 7.2.24:
+    
