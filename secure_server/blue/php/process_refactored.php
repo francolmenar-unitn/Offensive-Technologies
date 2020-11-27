@@ -136,7 +136,7 @@
                 }
 
                 $total = getUserBalance($mysqli, $user);
-                if($total == 0){
+                if($total === 0){
                     close_streams();
                     exit("Impossible to make a withdrawal. No money currently in the account.</body></html>");
                 }
