@@ -29,6 +29,7 @@ def close(conn):
 def check_constraint(conn, query, check):
 
     cursor = conn.cursor()
+    print("=================================================================")
     print("{} check".format(check))
     cursor.execute(query)
     records = cursor.fetchall()
@@ -38,22 +39,19 @@ def check_constraint(conn, query, check):
         print("{} violated... Printing results".format(check))
         for record in records:
             print(record)
+    print("=================================================================")
 
 def main():
     negative_total_check = "Users with negative balance"
     negative_total_violation = "SELECT user, SUM(amount) AS total FROM transfers GROUP BY (user) HAVING total < 0;"
     
-    negative_value_check = "Users with negative amounts"
-    negaive_value_violation = "SELECT user, amount FROM transfers WHERE amount <= 0"
-
     fk_constraint_check = "Transfer-User foreign key constraint"
     fk_constraint_violation = "SELECT user, amount FROM transfers WHERE user NOT IN (SELECT user FROM users)"
 
     conn = connect()
     if conn is not None and conn.is_connected():
         print("Starting constraint checks...")
-        check_constraint(conn, negaive_value_violation, negative_total_check)
-        check_constraint(conn, negaive_value_violation, negative_value_check)
+        check_constraint(conn, negative_total_violation, negative_total_check)
         check_constraint(conn, fk_constraint_violation, fk_constraint_check)
 
     close(conn)
