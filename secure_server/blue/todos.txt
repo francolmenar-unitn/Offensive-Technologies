@@ -19,7 +19,7 @@ Blue:
         2.9     change user and password in new mysqli()
 
     3 Change table fields:
-        3.1 Transfers table: Add foreign key from user to users.user.
+        3.1 Transfers table: Add foreign key from user to users.user. => will not work because engine is myisam.
         3.2 Users table: Change password length in order to introduce hashing.
 
     4 Web Application weaknesses:

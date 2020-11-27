@@ -3,8 +3,8 @@
 <body>
 
 <?php
-    #error_reporting(E_ALL);
-    #ini_set('display_errors','On');
+    error_reporting(E_ALL);
+    ini_set('display_errors','On');
 
     ###################################### PART FOR LOGGING. DO NOT MODIFY ####################################
     $myFile = "/tmp/request.log";
@@ -92,7 +92,7 @@
             if(!password_verify($pass, $row['pass'])){
                 exit("Invalid authentication...</body></html>");
             }else{
-                if(gettype($amount) != "integer"){
+                if(gettype($amount) !== "integer"){
                     close_streams();
                     exit("Need an integer for this operation...</body></html>");
                 }
@@ -104,7 +104,7 @@
                     close_streams();
                     exit("The deposit cannot be 0</body></html>");
                 }
-                ## Check for overflow...
+                
                 $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
                 $stm->bind_param("si", $user, $amount);
                 $stm->execute() or die("Ooops something went wrong... Try again.</body></html>");
@@ -122,13 +122,17 @@
                 close_streams();
                 exit("Invalid authentication...</body></html>");
             }else{
-                if(gettype($amount) != "integer"){
+                if(gettype($amount) !== "integer"){
                     close_streams();
                     exit("Need an integer for this operation...</body></html>");
                 }
                 if($amount < 0){
                     close_streams();
                     exit("You cannot withdraw a negative amount...</body></html>");
+                }
+                if($amount === 0){
+                    close_streams();
+                    exit("The withdrawal cannot be 0</body></html>");
                 }
 
                 $total = getUserBalance($mysqli, $user);
