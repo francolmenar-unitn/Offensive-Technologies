@@ -69,3 +69,9 @@ ssh -tt "$ssh_user" "ssh -tt $project '/users/$deter_user/blue/setup/server_setu
 
 echo "-------------- Running server_qos_setup.sh --------------"
 "$setup_path/server_qos_setup.sh" -u "$deter_user"
+
+echo "-------------- Adding executable options to server_iptables_setup.sh --------------"
+ssh -tt "$ssh_user" "ssh -tt $project 'sudo chmod +x /users/$deter_user/blue/setup/server_iptables_setup.sh; exit;' exit;"
+
+echo "-------------- Running server_iptables_setup.sh --------------"
+ssh -tt "$ssh_user" "ssh -tt $project '/users/$deter_user/blue/setup/server_iptables_setup.sh; exit;' exit;"

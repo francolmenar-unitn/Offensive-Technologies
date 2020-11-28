@@ -22,3 +22,9 @@ Installs the qos module. It has to be run on the laptop, not on the nodes.
 ```
 ./server_qos_setup.sh -u <username>
 ```
+
+## server_iptables_setup.sh
+Setup the iptables rules at the server. It has to be run at the server node.
+```
+./server_iptables_setup.sh
+```
