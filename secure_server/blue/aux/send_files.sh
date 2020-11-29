@@ -66,10 +66,11 @@ echo -e "------- Folder blue correctly removed -------\n"
 # Send the folder "blue"
 echo "------- Sending the files from the folder blue -------"
 scp -r "$project_path" "$ssh_user$deter_user_path"
-echo -e "------- Sending the files from the folder blue -------\n"
+echo -e "------- Files from the folder blue sent -------\n"
 
 # Setting to executable to all the scripts
-echo "------- Setting to executable to all the sent scripts -------"
-ssh -tt "$ssh_user" "ssh -tt $project 'sudo chmod +x blue/*/*.sh; exit;' exit;"
+echo "------- Setting executable permissions to all the sent scripts -------"
+ssh -tt "$ssh_user" "ssh -tt $project 'sudo chmod +x /users/$deter_user/blue/*/*.sh; exit;' exit;"
+ssh -tt "$ssh_user" "ssh -tt $project 'sudo chmod +x /users/$deter_user/blue/*/*.sh; exit;' exit;"
 echo -e "------- All the scripts have been set as executables -------\n"
 
