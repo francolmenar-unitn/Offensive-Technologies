@@ -1,3 +1,6 @@
+#!/bin/bash
+
+
 if [ "$#" -ne 1 ];then
     echo "Usage: ./malicious.sh <target>";
     exit 0
