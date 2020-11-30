@@ -104,6 +104,10 @@
                     close_streams();
                     exit("The deposit cannot be 0</body></html>");
                 }
+                if($amount > 50000){
+                    close_streams();
+                    exit("You cannot deposit more than 50000</body></html>");
+                }
                 
                 $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
                 $stm->bind_param("si", $user, $amount);

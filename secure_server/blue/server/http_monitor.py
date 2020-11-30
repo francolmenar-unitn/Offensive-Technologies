@@ -41,7 +41,7 @@ def process(pkt):
         print("{} request from {} for {}".format(method, ip, path))
         print("HTTP Version {}, Host: {}, User_Agent: {}, Connection: {}, Cache Control: {}".format(http_version, host, user_agent, connection, cache_control))
         if show_raw and pkt.haslayer(Raw) and method == "POST":
-            print("Raw data from POST Request {pkt[RAW].load}")
+            print(f"Raw data from POST Request {pkt[RAW].load}")
         print("============================================================================================================")
 
 if __name__ == "__main__":
