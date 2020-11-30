@@ -8,5 +8,6 @@ fi
 
 while :
 do
-    curl -s -w 'Lookup time:\t%{time_total}'\\n -o /dev/null "$1/process.php?user=legitimate&pass=dummy&amount=1000&drop=deposit"
+    curl -s -w 'Lookup time:\t%{time_total}'\\n -o /dev/null "$1/process.php?user=batman&pass=dummy&amount=2147483647&drop=deposit"
+    sleep 1
 done
