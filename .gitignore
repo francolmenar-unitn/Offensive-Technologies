@@ -136,3 +136,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+secure_server/red/wordlists.txt
+secure_server/red/wordlist.txt
