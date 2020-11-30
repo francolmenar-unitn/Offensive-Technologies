@@ -108,9 +108,9 @@
                     close_streams();
                     exit("The deposit cannot be 0</body></html>");
                 }
-                if(strlen(strval($amount)) > 5){
+                if($amount > 2147483647){
                     close_streams();
-                    exit("You cannot deposit more than 99999</body></html>");
+                    exit("You cannot deposit more than 2147483647</body></html>");
                 }
                 
                 $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
