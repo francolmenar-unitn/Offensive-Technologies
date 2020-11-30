@@ -42,23 +42,23 @@
 
     switch($choice){
         case "register":
-            $check = checkUserExists($mysqli, $user);
             if(strlen($user) === 0 or strlen($pass) === 0){
                 close_streams();
-                exit("Invalid user or password</body></html>"); 
-            }
-            if($check == null){
-                $hashed_password = password_hash($pass, PASSWORD_DEFAULT);
-                $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
-                $stm->bind_param("ss", $user, $hashed_password);
-                $stm->execute() or die("Ooops something went wrong... Try again.");
-                $result = $stm->get_result();
-                die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+                exit("Fields cannot be empty...</body></html>"); 
             }else{
-                close_streams();
-                exit("User already exists.</body></html>");
+                $check = checkUserExists($mysqli, $user);
+                if($check == null){
+                    $hashed_password = password_hash($pass, PASSWORD_DEFAULT);
+                    $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
+                    $stm->bind_param("ss", $user, $hashed_password);
+                    $stm->execute() or die("Ooops something went wrong... Try again.");
+                    $result = $stm->get_result();
+                    die('<script type="text/javascript">window.location.href="' . $url . '"; </script>');
+                }else{
+                    close_streams();
+                    exit("User already exists.</body></html>");
+                }
             }
-            
             break;
 
         case "balance":
@@ -72,7 +72,7 @@
                 print "<H1>Balance and transfer history for $user</H1><P>";
                 print "<table border=1><tr><th>Action</th><th>Amount</th></tr>";
 
-                $stm2 = $mysqli->prepare("SELECT * FROM transfers where user = ? LIMIT 10");
+                $stm2 = $mysqli->prepare("SELECT amount FROM transfers where user = ? LIMIT 1000");
                 $stm2->bind_param("s", $user);
                 $stm2->execute() or die("Ooops something went wrong... Try again.</body></html>");
                 $result = $stm2->get_result();
@@ -110,7 +110,7 @@
                 }
                 if($amount > 2147483647){
                     close_streams();
-                    exit("You cannot deposit more than 2147483647</body></html>");
+                    exit("Maximum deposit limit exceeded. Try again.</body></html>");
                 }
                 
                 $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");
@@ -141,6 +141,10 @@
                 if($amount === 0){
                     close_streams();
                     exit("The withdrawal cannot be 0</body></html>");
+                }
+                if($amount > 2147483647){
+                    close_streams();
+                    exit("Maximum withdrawal limit exceeded</body></html>");
                 }
 
                 $total = getUserBalance($mysqli, $user);
