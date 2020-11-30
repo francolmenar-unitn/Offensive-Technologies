@@ -16,8 +16,8 @@
     }
     ###########################################################################################################
 
-    $user = "nobody";
-    $pass = "nope";
+    $user = "";
+    $pass = "";
     $choice = "still no";
     $amount = 0;
 
@@ -43,6 +43,10 @@
     switch($choice){
         case "register":
             $check = checkUserExists($mysqli, $user);
+            if(strlen($user) === 0 or strlen($pass) === 0){
+                close_streams();
+                exit("Invalid user or password</body></html>"); 
+            }
             if($check == null){
                 $hashed_password = password_hash($pass, PASSWORD_DEFAULT);
                 $stm = $mysqli->prepare("INSERT INTO users (user, pass) VALUES (?, ?)");
@@ -103,6 +107,10 @@
                 if($amount === 0){
                     close_streams();
                     exit("The deposit cannot be 0</body></html>");
+                }
+                if($amount > 2147483647){
+                    close_streams();
+                    exit("You cannot deposit more than 2147483647</body></html>");
                 }
                 
                 $stm = $mysqli->prepare("INSERT INTO transfers (user,amount) values (?, ?)");

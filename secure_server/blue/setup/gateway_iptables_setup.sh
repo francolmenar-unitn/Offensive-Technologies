@@ -20,6 +20,9 @@ sudo iptables -A OUTPUT -o lo -j ACCEPT
 sudo iptables -A INPUT -i $deterlab_interface -j ACCEPT
 sudo iptables -A OUTPUT -o $deterlab_interface -j ACCEPT
 
+## ALLOW ALL TRAFFIC FROM ROUTER
+sudo iptables -A FORWARD -s 10.1.1.2 -j ACCEPT
+
 ## USE HASHLIMIT MODULE TO PUT LIMITS ON THE AMOUNT OF TRAFFIC PER SOURCE IP THAT CAN REACH THE SERVER
 sudo iptables --new-chain RATE-LIMIT
 

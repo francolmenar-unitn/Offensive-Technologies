@@ -25,8 +25,11 @@ echo "Secure php scripts successfully copied."
 
 echo "Adding users with improved passwords"
 echo "Adding user Jelena"
-curl -o /dev/null "http://127.0.0.1/process.php?user=jelena&pass=randomwords1656&drop=register"
+psw=$(./random_psw.sh)
+curl -o /dev/null "http://127.0.0.1/process.php?user=jelena&pass=${psw}&drop=register"
 echo "Adding user John"
-curl -o /dev/null "http://127.0.0.1/process.php?user=john&pass=anotherrandomword33&drop=register"
+psw=$(./random_psw.sh)
+curl -o /dev/null "http://127.0.0.1/process.php?user=john&pass=${psw}&drop=register"
 echo "Adding user Kate"
-curl -o /dev/null "http://127.0.0.1/process.php?user=kate&pass=yetanotherrandomword99&drop=register"
+psw=$(./random_psw.sh)
+curl -o /dev/null "http://127.0.0.1/process.php?user=kate&pass=${psw}&drop=register"
