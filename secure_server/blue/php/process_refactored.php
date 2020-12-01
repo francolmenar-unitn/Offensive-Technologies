@@ -68,6 +68,8 @@
                 exit("Invalid authentication...</body></html>");
             }else{
                 $total = getUserBalance($mysqli, $user);
+                if(is_null($total))
+                    $total = 0;
 
                 print "<H1>Balance and transfer history for $user</H1><P>";
                 print "<table border=1><tr><th>Action</th><th>Amount</th></tr>";
