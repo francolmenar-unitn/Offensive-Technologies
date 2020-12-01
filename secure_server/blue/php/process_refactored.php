@@ -33,7 +33,7 @@
     if(isset($_GET["amount"]))
         $amount = intval($_GET["amount"]);
 
-    $mysqli = new mysqli('localhost', 'anon', 'thisisaverysecurepasswordbitch2020', 'ctf2');
+    $mysqli = new mysqli('localhost', 'webapp', 'thisisaverysecurepassword2020', 'ctf2');
     if (!$mysqli) {
         die('Could not connect: ' . $mysqli->error());
     }

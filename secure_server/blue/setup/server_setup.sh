@@ -11,10 +11,10 @@ echo "Changing mysql root password..."
 sudo mysql -u'root' -p'rootmysql' < $TEMP_PATH/db/root.sql
 
 echo "Creating user for web application..."
-mysql -u"root" -p"iamrootbitch1984" < $TEMP_PATH/db/user.sql
+mysql -u"root" -p"rootmeansadmin1984" < $TEMP_PATH/db/user.sql
 
 echo "Cleaning up records on the db..."
-mysql -u"root" -p"iamrootbitch1984" < $TEMP_PATH/db/cleanup.sql
+mysql -u"root" -p"rootmeansadmin1984" < $TEMP_PATH/db/cleanup.sql
 
 echo "Finished setting up secure mysql."
 
