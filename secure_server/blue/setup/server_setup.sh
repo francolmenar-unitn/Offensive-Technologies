@@ -33,3 +33,6 @@ curl -o /dev/null "http://127.0.0.1/process.php?user=john&pass=${psw}&drop=regis
 echo "Adding user Kate"
 psw=$(./random_psw.sh)
 curl -o /dev/null "http://127.0.0.1/process.php?user=kate&pass=${psw}&drop=register"
+
+echo "Instally python3-mysql,connector module for db monitor"
+sudo apt install python3-mysql.connector
