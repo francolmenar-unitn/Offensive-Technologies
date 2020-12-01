@@ -1,10 +1,10 @@
-DELETE FROM users WHERE user="jelena";
-DELETE FROM users WHERE user="kate";
-DELETE FROM users WHERE user="john";
+DELETE FROM ctf2.users WHERE user="jelena";
+DELETE FROM ctf2.users WHERE user="kate";
+DELETE FROM ctf2.users WHERE user="john";
 
-DELETE FROM transfers WHERE user="jelena";
-DELETE FROM transfers WHERE user="kate";
-DELETE FROM transfers WHERE user="john";
+DELETE FROM ctf2.transfers WHERE user="jelena";
+DELETE FROM ctf2.transfers WHERE user="kate";
+DELETE FROM ctf2.transfers WHERE user="john";
 
 ALTER TABLE ctf2.users ENGINE=InnoDB;
 ALTER TABLE ctf2.transfers ENGINE=InnoDB;

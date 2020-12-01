@@ -36,8 +36,8 @@ curl -o /dev/null "http://127.0.0.1/process.php?user=kate&pass=${psw3}&drop=regi
 
 echo "Adding previous transfers"
 curl -o /dev/null "http://127.0.0.1/process.php?user=jelena&pass=${psw1}&drop=deposit&amount=12345"
-curl -o /dev/null "http://127.0.0.1/process.php?user=kate&pass=${psw2}&drop=deposit&amount=98512"
-curl -o /dev/null "http://127.0.0.1/process.php?user=jelena&pass=${psw3}&drop=deposit&amount=6587"
+curl -o /dev/null "http://127.0.0.1/process.php?user=kate&pass=${psw3}&drop=deposit&amount=98512"
+curl -o /dev/null "http://127.0.0.1/process.php?user=john&pass=${psw2}&drop=deposit&amount=6587"
 
 
 

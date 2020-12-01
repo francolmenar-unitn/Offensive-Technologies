@@ -2,7 +2,7 @@
 choose() { echo ${1:RANDOM%${#1}:1} $RANDOM; } 
 #Choose takes one argument, a string, and randomly selects a character from that string
 pass="$({
-    choose '!@#^&'
+    choose '!@^&'
     choose '0123456789'
     choose 'abcdefghijklmnopqrstuvwxyz'
     choose 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
