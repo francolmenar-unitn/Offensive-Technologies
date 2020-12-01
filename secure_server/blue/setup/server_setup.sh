@@ -23,16 +23,16 @@ sudo mv /var/www/html/process.php /var/www/html/process.php.old
 sudo cp $TEMP_PATH/php/process_refactored.php /var/www/html/process.php
 echo "Secure php scripts successfully copied."
 
-echo "Adding users with improved passwords"
-echo "Adding user Jelena"
-psw=$(./random_psw.sh)
-curl -o /dev/null "http://127.0.0.1/process.php?user=jelena&pass=${psw}&drop=register"
-echo "Adding user John"
-psw=$(./random_psw.sh)
-curl -o /dev/null "http://127.0.0.1/process.php?user=john&pass=${psw}&drop=register"
-echo "Adding user Kate"
-psw=$(./random_psw.sh)
-curl -o /dev/null "http://127.0.0.1/process.php?user=kate&pass=${psw}&drop=register"
+#echo "Adding users with improved passwords"
+#echo "Adding user Jelena"
+#psw=$(./random_psw.sh)
+#curl -o /dev/null "http://127.0.0.1/process.php?user=jelena&pass=${psw}&drop=register"
+#echo "Adding user John"
+#psw=$(./random_psw.sh)
+#curl -o /dev/null "http://127.0.0.1/process.php?user=john&pass=${psw}&drop=register"
+#echo "Adding user Kate"
+#psw=$(./random_psw.sh)
+#curl -o /dev/null "http://127.0.0.1/process.php?user=kate&pass=${psw}&drop=register"
 
 echo "Instally python3-mysql,connector module for db monitor"
 sudo apt install python3-mysql.connector
