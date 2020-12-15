@@ -1,6 +1,19 @@
+<<<<<<< HEAD
 .DS_Store
 */.DS_Store
 BufferOverflow/.DS_Store
+
+*.iml
+*.ipr
+*.iws
+.DS_Store
+.idea
+
+#Other stuff
+resilient_server/red/*.pcap
+resilient_server/red/distributed_arp_spoofer.py
+resilient_server/red/smurf.py
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -132,8 +145,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+
 *.zip
 /*.zip
 .idea/
 
-
+secure_server/red/wordlists.txt
+secure_server/red/wordlist.txt

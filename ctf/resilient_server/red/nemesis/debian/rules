@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@ --with=autoreconf
+
+override_dh_installchangelogs:
+	dh_installchangelogs ChangeLog.md
+
+override_dh_auto_install:
+	dh_auto_install
+	rm -f debian/nemesis/usr/share/doc/nemesis/LICENSE
+	rm -f debian/nemesis/usr/share/doc/nemesis/CREDITS
+	rm -f debian/nemesis/usr/share/doc/nemesis/ChangeLog.md

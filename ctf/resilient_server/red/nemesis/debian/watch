@@ -1,0 +1,2 @@
+version=3
+https://github.com/libnet/nemesis/releases/download/v(.*)/nemesis-(.*)\.tar\.gz
