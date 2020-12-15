@@ -1,3 +1,0 @@
-GET /process.php?user=temp&pass=temp&drop=balance HTTP/1.1
-
-
